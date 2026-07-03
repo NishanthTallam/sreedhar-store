@@ -41,8 +41,8 @@ export default function SendNotificationPage() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Broadcast Notification</h1>
-        <p className="text-sm text-surface-500 mt-1">Send a notification to all customers.</p>
+        <h1 className="text-2xl font-bold text-neutral-900">Broadcast Notification</h1>
+        <p className="text-sm text-neutral-500 mt-1">Send a notification to all customers.</p>
       </div>
 
       {message && (
@@ -51,15 +51,15 @@ export default function SendNotificationPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm space-y-6">
+      <form onSubmit={handleSubmit} className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
         <div className="space-y-4">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-surface-700">Category *</label>
+            <label className="text-sm font-medium text-neutral-700">Category *</label>
             <select 
               required 
               value={formData.category} 
               onChange={e => setFormData({ ...formData, category: e.target.value as NotificationCategory })} 
-              className="w-full rounded-md border border-surface-300 p-2 text-sm"
+              className="w-full rounded-md border border-neutral-300 p-2 text-sm"
             >
               <option value="OFFERS">Offers / Promotions</option>
               <option value="ACCOUNT">Account Announcements</option>
@@ -69,30 +69,30 @@ export default function SendNotificationPage() {
           </div>
           
           <div className="space-y-1">
-            <label className="text-sm font-medium text-surface-700">Title *</label>
+            <label className="text-sm font-medium text-neutral-700">Title *</label>
             <input 
               required 
               value={formData.title} 
               onChange={e => setFormData({ ...formData, title: e.target.value })} 
               placeholder="e.g. Flash Sale: 50% Off!"
-              className="w-full rounded-md border border-surface-300 p-2 text-sm" 
+              className="w-full rounded-md border border-neutral-300 p-2 text-sm" 
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-surface-700">Message Body *</label>
+            <label className="text-sm font-medium text-neutral-700">Message Body *</label>
             <textarea 
               required 
               rows={4}
               value={formData.body} 
               onChange={e => setFormData({ ...formData, body: e.target.value })} 
               placeholder="Enter the notification message..."
-              className="w-full rounded-md border border-surface-300 p-2 text-sm resize-none" 
+              className="w-full rounded-md border border-neutral-300 p-2 text-sm resize-none" 
             />
           </div>
         </div>
 
-        <div className="pt-4 border-t border-surface-100 flex justify-end">
+        <div className="pt-4 border-t border-neutral-100 flex justify-end">
           <button 
             type="submit" 
             disabled={loading}

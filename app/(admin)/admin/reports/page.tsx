@@ -38,42 +38,42 @@ export default function ReportsPage() {
     document.body.removeChild(link);
   };
 
-  if (loading) return <div className="p-8 text-center text-surface-500">Loading reports...</div>;
+  if (loading) return <div className="p-8 text-center text-neutral-500">Loading reports...</div>;
   if (!data) return <div className="p-8 text-center text-red-500">Failed to load reports</div>;
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-surface-900">Custom Reports</h1>
-          <p className="text-sm text-surface-500 mt-1">Generate and export store performance reports.</p>
+          <h1 className="text-2xl font-bold text-neutral-900">Custom Reports</h1>
+          <p className="text-sm text-neutral-500 mt-1">Generate and export store performance reports.</p>
         </div>
         <button 
           onClick={handleExportCSV}
-          className="flex items-center gap-2 rounded-lg bg-surface-900 px-4 py-2 text-sm font-medium text-white hover:bg-surface-800"
+          className="flex items-center gap-2 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
         >
           <ArrowDownTrayIcon className="w-5 h-5" />
           Export CSV
         </button>
       </div>
 
-      <div className="rounded-xl border border-surface-200 bg-white shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-surface-200 bg-surface-50">
-          <h3 className="font-semibold text-surface-900">Daily Sales Report (Last 30 Days)</h3>
+      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-200 bg-neutral-50">
+          <h3 className="font-semibold text-neutral-900">Daily Sales Report (Last 30 Days)</h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-surface-600">
-            <thead className="bg-surface-50 text-xs uppercase text-surface-500 border-b border-surface-200">
+          <table className="w-full text-left text-sm text-neutral-600">
+            <thead className="bg-neutral-50 text-xs uppercase text-neutral-500 border-b border-neutral-200">
               <tr>
                 <th className="px-6 py-3 font-medium">Date</th>
                 <th className="px-6 py-3 font-medium">Sales ($)</th>
                 <th className="px-6 py-3 font-medium">Orders Count</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-100">
+            <tbody className="divide-y divide-neutral-100">
               {data.chartData.map((row: any, i: number) => (
-                <tr key={i} className="hover:bg-surface-50/50">
-                  <td className="px-6 py-4 whitespace-nowrap font-medium text-surface-900">{row.date}</td>
+                <tr key={i} className="hover:bg-neutral-50/50">
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-neutral-900">{row.date}</td>
                   <td className="px-6 py-4 whitespace-nowrap">${row.sales.toFixed(2)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{row.orders}</td>
                 </tr>

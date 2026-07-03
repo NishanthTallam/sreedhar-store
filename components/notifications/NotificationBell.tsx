@@ -1,40 +1,39 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { BellIcon } from "@heroicons/react/24/outline";
+import * as React from "react"
+import { Bell } from "lucide-react"
+import { Badge } from "@/components/ui/Badge"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/Drawer"
+import { NotificationList } from "./NotificationList"
 
-export default function NotificationBell() {
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  useEffect(() => {
-    const fetchUnread = async () => {
-      try {
-        const res = await fetch("/api/notifications?unread=true");
-        if (res.ok) {
-          const json = await res.json();
-          setUnreadCount(json.data?.length || 0);
-        }
-      } catch (err) {
-        console.error("Failed to fetch unread notifications", err);
-      }
-    };
-    
-    fetchUnread();
-    
-    // Optional: poll every 60s
-    const interval = setInterval(fetchUnread, 60000);
-    return () => clearInterval(interval);
-  }, []);
+export function NotificationBell() {
+  const [unreadCount, setUnreadCount] = React.useState(3) // mock
 
   return (
-    <Link href="/account/notifications" className="relative p-2 text-surface-500 hover:text-surface-900 transition-colors">
-      <BellIcon className="h-6 w-6" />
-      {unreadCount > 0 && (
-        <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
-          {unreadCount > 99 ? '99+' : unreadCount}
-        </span>
-      )}
-    </Link>
-  );
+    <Drawer>
+      <DrawerTrigger asChild>
+        <button className="relative rounded-md p-2 text-neutral-600 transition-colors hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <Badge 
+              className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full p-0 px-1 text-[10px]" 
+              statusColor="danger"
+            >
+              {unreadCount}
+            </Badge>
+          )}
+          <span className="sr-only">Notifications</span>
+        </button>
+      </DrawerTrigger>
+      <DrawerContent side="right" className="w-full sm:w-[400px]">
+        <DrawerHeader>
+          <DrawerTitle>Notifications</DrawerTitle>
+        </DrawerHeader>
+        <div className="flex-1 overflow-y-auto px-4 py-2">
+          {/* Mock notifications */}
+          <NotificationList />
+        </div>
+      </DrawerContent>
+    </Drawer>
+  )
 }

@@ -1,21 +1,35 @@
-"use client";
+"use client"
 
-export default function AddressMapPicker() {
+import * as React from "react"
+import { MapPin, Navigation } from "lucide-react"
+import { Button } from "@/components/ui/Button"
+
+// Note: This is a visual shell/mock for the AddressMapPicker as per design.md.
+// Actual Google Maps integration would use @googlemaps/js-api-loader and a map div.
+export function AddressMapPicker() {
   return (
-    <div className="w-full flex-col gap-2">
-      <div className="h-64 w-full rounded-xl border border-surface-200 bg-surface-50 relative overflow-hidden flex flex-col items-center justify-center">
-        <svg className="h-8 w-8 text-surface-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <p className="text-sm font-medium text-surface-600 text-center px-4">
-          Map Picker Placeholder<br/>
-          <span className="text-xs text-surface-500 font-normal">Google Maps SDK will be integrated here</span>
-        </p>
+    <div className="flex flex-col gap-4">
+      <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 flex items-center justify-center">
+        {/* Placeholder for Google Map */}
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/50 backdrop-blur-[2px]">
+          <MapPin className="mb-2 h-8 w-8 text-danger-500" />
+          <p className="text-sm font-medium text-neutral-700">Map Integration Pending</p>
+        </div>
+        
+        <Button 
+          variant="secondary" 
+          size="sm" 
+          className="absolute bottom-4 right-4 z-20 gap-2 bg-white shadow-md"
+        >
+          <Navigation className="h-4 w-4 text-brand-600" />
+          Use Current Location
+        </Button>
       </div>
-      <button type="button" className="mt-2 w-full rounded-lg border border-surface-300 bg-white px-4 py-2 text-sm font-medium text-surface-700 hover:bg-surface-50 transition-colors">
-        Detect My Location
-      </button>
+
+      <div className="rounded-lg border border-neutral-200 p-4">
+        <h4 className="mb-2 text-sm font-semibold text-neutral-900">Selected Location</h4>
+        <p className="text-sm text-neutral-600">123 Sample Street, Tech Park, City, State 123456</p>
+      </div>
     </div>
-  );
+  )
 }

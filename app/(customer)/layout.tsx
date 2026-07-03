@@ -1,6 +1,6 @@
 // app/(customer)/layout.tsx
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import CustomerSidebar from "@/components/layout/CustomerSidebar";
 
 export const dynamic = "force-dynamic";

@@ -1,79 +1,90 @@
-"use client";
+"use client"
 
-import { useState } from "react";
+import * as React from "react"
+import { CheckCircle2, XCircle } from "lucide-react"
+import { Input } from "@/components/ui/Input"
+import { Button } from "@/components/ui/Button"
 
 interface CouponInputProps {
-  onApply: (code: string) => Promise<{ success: boolean; message: string; discount?: number }>;
-  appliedCoupon?: string | null;
-  onRemove: () => void;
+  onApply: (code: string) => Promise<void>
+  appliedCoupon?: {
+    code: string
+    discountAmount: number
+  } | null
+  onRemove?: () => void
 }
 
-export default function CouponInput({ onApply, appliedCoupon, onRemove }: CouponInputProps) {
-  const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState<{ type: 'error' | 'success', message: string } | null>(null);
+export function CouponInput({ onApply, appliedCoupon, onRemove }: CouponInputProps) {
+  const [code, setCode] = React.useState("")
+  const [error, setError] = React.useState("")
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const handleApply = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!code.trim()) return;
+    e.preventDefault()
+    if (!code.trim()) return
+
+    setIsLoading(true)
+    setError("")
     
-    setLoading(true);
-    setFeedback(null);
     try {
-      const res = await onApply(code);
-      if (res.success) {
-        setFeedback({ type: 'success', message: res.message });
-      } else {
-        setFeedback({ type: 'error', message: res.message });
-      }
-    } catch (err) {
-      setFeedback({ type: 'error', message: "Failed to apply coupon." });
+      await onApply(code.trim().toUpperCase())
+      setCode("")
+    } catch (err: any) {
+      setError(err.message || "Invalid coupon code")
     } finally {
-      setLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   if (appliedCoupon) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="font-medium text-green-800">Code <span className="font-bold">{appliedCoupon}</span> applied</span>
+      <div className="flex items-center justify-between rounded-lg border border-success-500 bg-success-500/10 p-3">
+        <div className="flex items-center gap-2 text-success-500">
+          <CheckCircle2 className="h-5 w-5" />
+          <div className="text-sm">
+            <span className="font-bold">{appliedCoupon.code}</span> applied
+            <span className="ml-1 font-semibold block sm:inline">— ₹{appliedCoupon.discountAmount} off</span>
           </div>
-          <button onClick={onRemove} className="text-sm font-medium text-red-600 hover:underline">
+        </div>
+        {onRemove && (
+          <button
+            onClick={onRemove}
+            className="text-sm font-medium text-danger-500 hover:text-danger-600 ml-4"
+          >
             Remove
           </button>
-        </div>
+        )}
       </div>
-    );
+    )
   }
 
   return (
-    <div>
-      <form onSubmit={handleApply} className="flex gap-2">
-        <input
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase())}
+    <form onSubmit={handleApply} className="flex flex-col gap-2">
+      <div className="flex gap-2">
+        <Input
           placeholder="Enter coupon code"
-          className="flex-1 rounded-lg border border-surface-300 px-4 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          value={code}
+          onChange={(e) => {
+            setCode(e.target.value)
+            setError("")
+          }}
+          className="uppercase placeholder:normal-case"
         />
-        <button
-          type="submit"
-          disabled={loading || !code.trim()}
-          className="rounded-lg bg-surface-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-surface-800 disabled:bg-surface-300"
+        <Button 
+          type="submit" 
+          variant="secondary" 
+          disabled={!code.trim() || isLoading}
+          className="shrink-0"
         >
-          {loading ? "Applying..." : "Apply"}
-        </button>
-      </form>
-      {feedback && (
-        <p className={`mt-2 text-sm ${feedback.type === 'error' ? 'text-red-600' : 'text-green-600'}`}>
-          {feedback.message}
-        </p>
+          {isLoading ? "Applying..." : "Apply"}
+        </Button>
+      </div>
+      {error && (
+        <div className="flex items-center gap-1 text-sm text-danger-500 mt-1">
+          <XCircle className="h-4 w-4" />
+          {error}
+        </div>
       )}
-    </div>
-  );
+    </form>
+  )
 }

@@ -10,8 +10,8 @@ export default async function NewProductPage() {
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Add New Product</h1>
-        <p className="text-sm text-surface-500 mt-1">Create a new product with multiple variants.</p>
+        <h1 className="text-2xl font-bold text-neutral-900">Add New Product</h1>
+        <p className="text-sm text-neutral-500 mt-1">Create a new product with multiple variants.</p>
       </div>
       <ProductForm categories={categories} brands={brands} />
     </div>

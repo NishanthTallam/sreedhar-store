@@ -17,7 +17,7 @@ export default function AdminDashboardPage() {
       });
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-surface-500">Loading dashboard...</div>;
+  if (loading) return <div className="p-8 text-center text-neutral-500">Loading dashboard...</div>;
   if (!data) return <div className="p-8 text-center text-red-500">Failed to load analytics</div>;
 
   const { kpi, chartData } = data;
@@ -32,20 +32,20 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Dashboard Overview</h1>
-        <p className="text-sm text-surface-500 mt-1">Key metrics and recent performance.</p>
+        <h1 className="text-2xl font-bold text-neutral-900">Dashboard Overview</h1>
+        <p className="text-sm text-neutral-500 mt-1">Key metrics and recent performance.</p>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {kpiCards.map((card, idx) => (
-          <div key={idx} className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm flex items-center gap-4">
+          <div key={idx} className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm flex items-center gap-4">
             <div className={`p-3 rounded-lg ${card.bg} ${card.color}`}>
               <card.icon className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-surface-500">{card.name}</p>
-              <h3 className="text-2xl font-bold text-surface-900">{card.value}</h3>
+              <p className="text-sm font-medium text-neutral-500">{card.name}</p>
+              <h3 className="text-2xl font-bold text-neutral-900">{card.value}</h3>
             </div>
           </div>
         ))}
@@ -53,8 +53,8 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Revenue Chart */}
-        <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm space-y-6">
-          <h2 className="text-lg font-bold text-surface-900">Revenue (Last 30 Days)</h2>
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold text-neutral-900">Revenue (Last 30 Days)</h2>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -78,8 +78,8 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Orders Chart */}
-        <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm space-y-6">
-          <h2 className="text-lg font-bold text-surface-900">Orders (Last 30 Days)</h2>
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold text-neutral-900">Orders (Last 30 Days)</h2>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

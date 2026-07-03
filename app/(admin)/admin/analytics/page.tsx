@@ -20,7 +20,7 @@ export default function AdvancedAnalyticsPage() {
       });
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-surface-500">Loading analytics...</div>;
+  if (loading) return <div className="p-8 text-center text-neutral-500">Loading analytics...</div>;
   if (!data) return <div className="p-8 text-center text-red-500">Failed to load analytics</div>;
 
   const { chartData } = data;
@@ -36,14 +36,14 @@ export default function AdvancedAnalyticsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Advanced Analytics</h1>
-        <p className="text-sm text-surface-500 mt-1">Deep dive into store metrics and growth.</p>
+        <h1 className="text-2xl font-bold text-neutral-900">Advanced Analytics</h1>
+        <p className="text-sm text-neutral-500 mt-1">Deep dive into store metrics and growth.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Sales Trend (Line Chart) */}
-        <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm space-y-6 lg:col-span-2">
-          <h2 className="text-lg font-bold text-surface-900">Sales Growth Trend</h2>
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6 lg:col-span-2">
+          <h2 className="text-lg font-bold text-neutral-900">Sales Growth Trend</h2>
           <div className="h-96 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -61,8 +61,8 @@ export default function AdvancedAnalyticsPage() {
         </div>
 
         {/* Category Breakdown (Pie Chart) */}
-        <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm space-y-6">
-          <h2 className="text-lg font-bold text-surface-900">Revenue by Category (Sample)</h2>
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold text-neutral-900">Revenue by Category (Sample)</h2>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>

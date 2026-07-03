@@ -8,14 +8,14 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-surface-50">
+    <div className="flex min-h-screen bg-neutral-50">
       <AdminSidebar />
 
       {/* Main content area — offset by sidebar width (w-64 = 16rem) */}
       <div className="flex flex-1 flex-col pl-64">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-surface-200 bg-white/80 px-6 backdrop-blur-md">
-          <h1 className="text-lg font-semibold text-surface-900">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-neutral-200 bg-white/80 px-6 backdrop-blur-md">
+          <h1 className="text-lg font-semibold text-neutral-900">
             Admin Panel
           </h1>
           <div className="flex items-center gap-3">

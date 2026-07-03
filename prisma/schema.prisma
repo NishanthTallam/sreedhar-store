@@ -65,6 +65,13 @@ enum NotificationCategory {
   PRICE_DROP
 }
 
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
 model User {
   id                String    @id @default(cuid())
   name              String
@@ -195,6 +202,7 @@ model Variant {
   stock        Int            @default(0)
   lowStockAt   Int            @default(10)  // threshold for low-stock alert
   sku          String         @unique
+  barcode      String?        @unique
   orderItems   OrderItem[]
   cartItems    CartItem[]
   stockHistory StockHistory[]
@@ -262,6 +270,7 @@ model Order {
   discountAmount Decimal          @default(0) @db.Decimal(10, 2)
   totalAmount    Decimal          @db.Decimal(10, 2)
   paymentMethod  String           @default("COD")
+  payment        Payment?
   deliveryBoyId  String?
   deliveryBoy    User?            @relation("DeliveryBoyOrders", fields: [deliveryBoyId], references: [id])
   cancelledAt    DateTime?
@@ -409,4 +418,16 @@ model StoreSetting {
   freeDeliveryAbove  Decimal @default(500) @db.Decimal(10, 2)
   activePaymentMethods String[] @default(["COD"])
   smtpFromEmail   String?
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount        Decimal       @db.Decimal(10, 2)
+  method        String        @default("COD")
+  status        PaymentStatus @default(PENDING)
+  transactionId String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }

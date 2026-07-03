@@ -46,16 +46,16 @@ function VerifyEmailContent() {
       {status === "loading" && (
         <>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mb-4" />
-          <h1 className="text-xl font-semibold text-surface-800">Verifying your email...</h1>
+          <h1 className="text-xl font-semibold text-neutral-800">Verifying your email...</h1>
         </>
       )}
 
       {status === "success" && (
         <>
           <CheckCircleIcon className="h-16 w-16 text-green-500 mb-4" />
-          <h1 className="text-2xl font-bold text-surface-900">Email Verified!</h1>
-          <p className="mt-2 text-surface-500">{message}</p>
-          <p className="mt-2 text-sm text-surface-400">Redirecting to home in 3 seconds...</p>
+          <h1 className="text-2xl font-bold text-neutral-900">Email Verified!</h1>
+          <p className="mt-2 text-neutral-500">{message}</p>
+          <p className="mt-2 text-sm text-neutral-400">Redirecting to home in 3 seconds...</p>
           <Link
             href="/"
             className="mt-6 inline-block px-6 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium hover:bg-brand-700"
@@ -68,8 +68,8 @@ function VerifyEmailContent() {
       {status === "error" && (
         <>
           <XCircleIcon className="h-16 w-16 text-red-500 mb-4" />
-          <h1 className="text-2xl font-bold text-surface-900">Verification Failed</h1>
-          <p className="mt-2 text-surface-500">{message}</p>
+          <h1 className="text-2xl font-bold text-neutral-900">Verification Failed</h1>
+          <p className="mt-2 text-neutral-500">{message}</p>
           <div className="mt-6 flex gap-3">
             <Link
               href="/login"
@@ -79,7 +79,7 @@ function VerifyEmailContent() {
             </Link>
             <Link
               href="/register"
-              className="px-6 py-2.5 border border-surface-300 text-surface-700 rounded-md text-sm font-medium hover:bg-surface-50"
+              className="px-6 py-2.5 border border-neutral-300 text-neutral-700 rounded-md text-sm font-medium hover:bg-neutral-50"
             >
               Register Again
             </Link>

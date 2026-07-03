@@ -47,6 +47,12 @@ export async function POST(req: Request) {
         select: { id: true },
       });
       userIds = customers.map(c => c.id);
+      
+      // Also send a copy to the admin who initiated it so they can see the broadcast
+      const session = await requireAuth();
+      if (!userIds.includes(session.user.id)) {
+        userIds.push(session.user.id);
+      }
     }
 
     // Bulk insert

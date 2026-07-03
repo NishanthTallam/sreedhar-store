@@ -49,10 +49,10 @@ function LoginForm() {
   return (
     <div className="flex min-h-[70vh] flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-surface-900">
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-neutral-900">
           Sign in to your account
         </h2>
-        <p className="mt-2 text-center text-sm text-surface-600">
+        <p className="mt-2 text-center text-sm text-neutral-600">
           Or{" "}
           <Link href="/register" className="font-medium text-brand-600 hover:text-brand-500">
             create a new account
@@ -61,7 +61,7 @@ function LoginForm() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 border border-surface-200">
+        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 border border-neutral-200">
           {/* ✅ Fix: Show success banner after password reset */}
           {resetSuccess && (
             <div className="mb-4 bg-green-50 text-green-700 p-3 rounded-md text-sm border border-green-200">
@@ -77,34 +77,34 @@ function LoginForm() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-surface-700">Email address</label>
+              <label className="block text-sm font-medium text-neutral-700">Email address</label>
               <div className="relative mt-1">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <EnvelopeIcon className="h-5 w-5 text-surface-400" />
+                  <EnvelopeIcon className="h-5 w-5 text-neutral-400" />
                 </div>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-md border border-surface-300 bg-white text-surface-900 pl-10 px-3 py-2 text-sm placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="block w-full rounded-md border border-neutral-300 bg-white text-neutral-900 pl-10 px-3 py-2 text-sm placeholder-neutral-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="you@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-surface-700">Password</label>
+              <label className="block text-sm font-medium text-neutral-700">Password</label>
               <div className="relative mt-1">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <LockClosedIcon className="h-5 w-5 text-surface-400" />
+                  <LockClosedIcon className="h-5 w-5 text-neutral-400" />
                 </div>
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded-md border border-surface-300 bg-white text-surface-900 pl-10 px-3 py-2 text-sm placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="block w-full rounded-md border border-neutral-300 bg-white text-neutral-900 pl-10 px-3 py-2 text-sm placeholder-neutral-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="••••••••"
                 />
               </div>
@@ -116,9 +116,9 @@ function LoginForm() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 rounded border-surface-300 text-brand-600 focus:ring-brand-500"
+                  className="h-4 w-4 rounded border-neutral-300 text-brand-600 focus:ring-brand-500"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-surface-900">
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-neutral-900">
                   Remember me
                 </label>
               </div>

@@ -1,86 +1,92 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import * as React from "react"
+import { cn } from "@/lib/utils"
 
-export default function BannerCarousel() {
-  const [banners, setBanners] = useState<any[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+interface Banner {
+  id: string
+  imageUrl: string
+  title: string
+  linkUrl?: string
+}
 
-  useEffect(() => {
-    fetchBanners();
-  }, []);
+interface BannerCarouselProps {
+  banners: Banner[]
+  className?: string
+}
 
-  useEffect(() => {
-    if (banners.length <= 1) return;
+export function BannerCarousel({ banners, className }: BannerCarouselProps) {
+  const [currentIndex, setCurrentIndex] = React.useState(0)
+  const [isPaused, setIsPaused] = React.useState(false)
+
+  React.useEffect(() => {
+    if (banners.length <= 1) return
+    if (isPaused) return
+
+    const matchMedia = window.matchMedia("(prefers-reduced-motion: reduce)")
+    if (matchMedia.matches) return
+
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % banners.length);
-    }, 5000); // Rotate every 5 seconds
-    return () => clearInterval(interval);
-  }, [banners.length]);
+      setCurrentIndex((prev) => (prev + 1) % banners.length)
+    }, 6000)
 
-  const fetchBanners = async () => {
-    try {
-      const res = await fetch("/api/banners");
-      if (res.ok) {
-        const json = await res.json();
-        // Only show HOMEPAGE and FESTIVAL on the main carousel, or all. 
-        // We'll show all active banners.
-        setBanners(json.data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch banners", err);
-    }
-  };
+    return () => clearInterval(interval)
+  }, [banners.length, isPaused])
 
-  if (banners.length === 0) return null;
-
-  const currentBanner = banners[currentIndex];
+  if (!banners.length) return null
 
   return (
-    <div className="relative w-full overflow-hidden bg-surface-100 rounded-2xl aspect-[21/9] md:aspect-[3/1] lg:aspect-[4/1]">
-      {banners.map((banner, index) => (
-        <div
-          key={banner.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
-          }`}
-        >
-          {banner.linkUrl ? (
-            <Link href={banner.linkUrl} className="block w-full h-full">
-              <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
-            </Link>
-          ) : (
-            <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
-          )}
-          
-          {/* Optional Overlay Text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none flex items-end">
-            <div className="p-6 md:p-8">
-              <span className="inline-block px-3 py-1 mb-3 text-xs font-semibold tracking-wider text-white uppercase bg-brand-600 rounded-full">
-                {banner.type}
-              </span>
-              <h2 className="text-2xl md:text-4xl font-bold text-white shadow-sm">{banner.title}</h2>
-            </div>
+    <div
+      className={cn("relative w-full overflow-hidden rounded-lg", className)}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+    >
+      <div
+        className="flex transition-transform duration-500 ease-out"
+        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+      >
+        {banners.map((banner) => (
+          <div key={banner.id} className="w-full shrink-0">
+            {banner.linkUrl ? (
+              <a href={banner.linkUrl} className="block w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={banner.imageUrl}
+                  alt={banner.title}
+                  className="aspect-[4/3] w-full object-cover md:aspect-[16/5]"
+                  loading="lazy"
+                />
+              </a>
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={banner.imageUrl}
+                alt={banner.title}
+                className="aspect-[4/3] w-full object-cover md:aspect-[16/5]"
+                loading="lazy"
+              />
+            )}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      {/* Navigation Dots */}
       {banners.length > 1 && (
-        <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2">
-          {banners.map((_, index) => (
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+          {banners.map((_, i) => (
             <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${
-                index === currentIndex ? "bg-white w-6" : "bg-white/50 hover:bg-white/80"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
+              key={i}
+              onClick={() => setCurrentIndex(i)}
+              className={cn(
+                "h-2 w-2 rounded-full transition-all",
+                currentIndex === i ? "bg-brand-500 w-4" : "bg-white/60 hover:bg-white"
+              )}
+              aria-label={`Go to slide ${i + 1}`}
             />
           ))}
         </div>
       )}
     </div>
-  );
+  )
 }

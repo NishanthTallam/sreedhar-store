@@ -45,10 +45,10 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-[70vh] flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-surface-900">
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-neutral-900">
           Create an account
         </h2>
-        <p className="mt-2 text-center text-sm text-surface-600">
+        <p className="mt-2 text-center text-sm text-neutral-600">
           Already have an account?{" "}
           <Link href="/login" className="font-medium text-brand-600 hover:text-brand-500">
             Sign in instead
@@ -57,15 +57,15 @@ export default function RegisterPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 border border-surface-200">
+        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 border border-neutral-200">
           {success ? (
             <div className="text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
                 <EnvelopeIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
               </div>
-              <h3 className="text-lg font-medium text-surface-900">Verify your email</h3>
-              <p className="mt-2 text-sm text-surface-500">
-                We've sent an email to <span className="font-semibold text-surface-900">{email}</span>.
+              <h3 className="text-lg font-medium text-neutral-900">Verify your email</h3>
+              <p className="mt-2 text-sm text-neutral-500">
+                We've sent an email to <span className="font-semibold text-neutral-900">{email}</span>.
                 Please click the link in the email to verify your account.
               </p>
               <div className="mt-6">
@@ -86,44 +86,44 @@ export default function RegisterPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-surface-700">Full name</label>
+                <label className="block text-sm font-medium text-neutral-700">Full name</label>
                 <div className="relative mt-1">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <UserIcon className="h-5 w-5 text-surface-400" />
+                    <UserIcon className="h-5 w-5 text-neutral-400" />
                   </div>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="block w-full rounded-md border border-surface-300 bg-white text-surface-900 pl-10 px-3 py-2 text-sm placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="block w-full rounded-md border border-neutral-300 bg-white text-neutral-900 pl-10 px-3 py-2 text-sm placeholder-neutral-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="John Doe"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-surface-700">Email address</label>
+                <label className="block text-sm font-medium text-neutral-700">Email address</label>
                 <div className="relative mt-1">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <EnvelopeIcon className="h-5 w-5 text-surface-400" />
+                    <EnvelopeIcon className="h-5 w-5 text-neutral-400" />
                   </div>
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full rounded-md border border-surface-300 bg-white text-surface-900 pl-10 px-3 py-2 text-sm placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="block w-full rounded-md border border-neutral-300 bg-white text-neutral-900 pl-10 px-3 py-2 text-sm placeholder-neutral-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="you@example.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-surface-700">Password</label>
+                <label className="block text-sm font-medium text-neutral-700">Password</label>
                 <div className="relative mt-1">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <LockClosedIcon className="h-5 w-5 text-surface-400" />
+                    <LockClosedIcon className="h-5 w-5 text-neutral-400" />
                   </div>
                   <input
                     type="password"
@@ -131,11 +131,11 @@ export default function RegisterPage() {
                     minLength={8}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full rounded-md border border-surface-300 bg-white text-surface-900 pl-10 px-3 py-2 text-sm placeholder-surface-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="block w-full rounded-md border border-neutral-300 bg-white text-neutral-900 pl-10 px-3 py-2 text-sm placeholder-neutral-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="••••••••"
                   />
                 </div>
-                <p className="mt-1 text-xs text-surface-500">Must be at least 8 characters long.</p>
+                <p className="mt-1 text-xs text-neutral-500">Must be at least 8 characters long.</p>
               </div>
 
               <div>

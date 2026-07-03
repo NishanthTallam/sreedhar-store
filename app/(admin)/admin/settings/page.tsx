@@ -48,27 +48,27 @@ export default function SettingsPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-surface-500">Loading settings...</div>;
+  if (loading) return <div className="p-8 text-center text-neutral-500">Loading settings...</div>;
 
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Store Settings</h1>
-        <p className="text-sm text-surface-500 mt-1">Manage global configuration for your storefront.</p>
+        <h1 className="text-2xl font-bold text-neutral-900">Store Settings</h1>
+        <p className="text-sm text-neutral-500 mt-1">Manage global configuration for your storefront.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* General Settings */}
-        <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm space-y-6">
-          <h2 className="text-lg font-bold text-surface-900 border-b border-surface-100 pb-2">General</h2>
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold text-neutral-900 border-b border-neutral-100 pb-2">General</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-surface-700">Store Name</label>
-              <input type="text" name="storeName" value={settings?.storeName || ""} onChange={handleChange} required className="w-full rounded-md border border-surface-300 p-2 text-sm" />
+              <label className="text-sm font-medium text-neutral-700">Store Name</label>
+              <input type="text" name="storeName" value={settings?.storeName || ""} onChange={handleChange} required className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-surface-700">Currency</label>
-              <select name="currency" value={settings?.currency || "USD"} onChange={handleChange} className="w-full rounded-md border border-surface-300 p-2 text-sm">
+              <label className="text-sm font-medium text-neutral-700">Currency</label>
+              <select name="currency" value={settings?.currency || "USD"} onChange={handleChange} className="w-full rounded-md border border-neutral-300 p-2 text-sm">
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
                 <option value="GBP">GBP (£)</option>
@@ -79,39 +79,39 @@ export default function SettingsPage() {
         </div>
 
         {/* Contact Information */}
-        <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm space-y-6">
-          <h2 className="text-lg font-bold text-surface-900 border-b border-surface-100 pb-2">Contact Information</h2>
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold text-neutral-900 border-b border-neutral-100 pb-2">Contact Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1 md:col-span-2">
-              <label className="text-sm font-medium text-surface-700">Store Address</label>
-              <input type="text" name="storeAddress" value={settings?.storeAddress || ""} onChange={handleChange} className="w-full rounded-md border border-surface-300 p-2 text-sm" />
+              <label className="text-sm font-medium text-neutral-700">Store Address</label>
+              <input type="text" name="storeAddress" value={settings?.storeAddress || ""} onChange={handleChange} className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-surface-700">Support Email</label>
-              <input type="email" name="supportEmail" value={settings?.supportEmail || ""} onChange={handleChange} className="w-full rounded-md border border-surface-300 p-2 text-sm" />
+              <label className="text-sm font-medium text-neutral-700">Support Email</label>
+              <input type="email" name="supportEmail" value={settings?.supportEmail || ""} onChange={handleChange} className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-surface-700">Support Phone</label>
-              <input type="text" name="supportPhone" value={settings?.supportPhone || ""} onChange={handleChange} className="w-full rounded-md border border-surface-300 p-2 text-sm" />
+              <label className="text-sm font-medium text-neutral-700">Support Phone</label>
+              <input type="text" name="supportPhone" value={settings?.supportPhone || ""} onChange={handleChange} className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-surface-700">WhatsApp Number</label>
-              <input type="text" name="whatsappNumber" value={settings?.whatsappNumber || ""} onChange={handleChange} className="w-full rounded-md border border-surface-300 p-2 text-sm" />
+              <label className="text-sm font-medium text-neutral-700">WhatsApp Number</label>
+              <input type="text" name="whatsappNumber" value={settings?.whatsappNumber || ""} onChange={handleChange} className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
             </div>
           </div>
         </div>
 
         {/* Delivery Settings */}
-        <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm space-y-6">
-          <h2 className="text-lg font-bold text-surface-900 border-b border-surface-100 pb-2">Delivery & Shipping</h2>
+        <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold text-neutral-900 border-b border-neutral-100 pb-2">Delivery & Shipping</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-surface-700">Flat Delivery Charge</label>
-              <input type="number" step="0.01" name="deliveryChargeFlat" value={settings?.deliveryChargeFlat || 0} onChange={handleChange} className="w-full rounded-md border border-surface-300 p-2 text-sm" />
+              <label className="text-sm font-medium text-neutral-700">Flat Delivery Charge</label>
+              <input type="number" step="0.01" name="deliveryChargeFlat" value={settings?.deliveryChargeFlat || 0} onChange={handleChange} className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-surface-700">Free Delivery Above</label>
-              <input type="number" step="0.01" name="freeDeliveryAbove" value={settings?.freeDeliveryAbove || 0} onChange={handleChange} className="w-full rounded-md border border-surface-300 p-2 text-sm" />
+              <label className="text-sm font-medium text-neutral-700">Free Delivery Above</label>
+              <input type="number" step="0.01" name="freeDeliveryAbove" value={settings?.freeDeliveryAbove || 0} onChange={handleChange} className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
             </div>
           </div>
         </div>

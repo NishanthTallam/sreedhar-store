@@ -26,6 +26,7 @@ const navSections = [
       { label: "Orders", href: "/admin/orders", icon: "🛒" },
       { label: "Returns", href: "/admin/returns", icon: "↩️" },
       { label: "Coupons", href: "/admin/coupons", icon: "🎟️" },
+      { label: "Payments", href: "/admin/payments", icon: "💳" },
     ],
   },
   {
@@ -64,14 +65,14 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r border-surface-200 bg-white">
+    <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r border-neutral-200 bg-white">
       {/* Logo area */}
-      <div className="flex h-16 items-center gap-2 border-b border-surface-200 px-5">
+      <div className="flex h-16 items-center gap-2 border-b border-neutral-200 px-5">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white font-bold text-sm">
           G
         </div>
         <div>
-          <span className="text-base font-bold text-surface-900">General Store</span>
+          <span className="text-base font-bold text-neutral-900">General Store</span>
           <span className="block text-[10px] font-medium text-brand-600 uppercase tracking-wider">
             Admin Panel
           </span>
@@ -82,7 +83,7 @@ export default function AdminSidebar() {
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         {navSections.map((section) => (
           <div key={section.label} className="mb-4">
-            <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-surface-400">
+            <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
               {section.label}
             </p>
             <ul className="space-y-0.5">
@@ -95,7 +96,7 @@ export default function AdminSidebar() {
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
                         isActive
                           ? "bg-brand-50 text-brand-700"
-                          : "text-surface-600 hover:bg-surface-50 hover:text-surface-900"
+                          : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900"
                       }`}
                     >
                       <span className="text-base">{item.icon}</span>
@@ -110,10 +111,10 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-surface-200 p-4">
+      <div className="border-t border-neutral-200 p-4">
         <Link
           href="/"
-          className="flex items-center gap-2 text-sm text-surface-500 hover:text-brand-600 transition-colors"
+          className="flex items-center gap-2 text-sm text-neutral-500 hover:text-brand-600 transition-colors"
         >
           <span>🏠</span>
           <span>View Store</span>

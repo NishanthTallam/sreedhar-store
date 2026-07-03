@@ -74,17 +74,17 @@ function VerifyOtpContent() {
   return (
     <div className="flex min-h-[70vh] flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-surface-900">
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-neutral-900">
           Enter verification code
         </h2>
-        <p className="mt-2 text-center text-sm text-surface-600">
+        <p className="mt-2 text-center text-sm text-neutral-600">
           We sent a 6-digit code to{" "}
-          <span className="font-medium text-surface-900">{email || "your email"}</span>
+          <span className="font-medium text-neutral-900">{email || "your email"}</span>
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 border border-surface-200">
+        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 border border-neutral-200">
           <form className="space-y-6" onSubmit={handleVerify}>
             {error && (
               <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm border border-red-100">
@@ -104,7 +104,7 @@ function VerifyOtpContent() {
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="h-12 w-12 rounded-md border border-surface-300 bg-white text-center text-lg font-bold text-surface-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="h-12 w-12 rounded-md border border-neutral-300 bg-white text-center text-lg font-bold text-neutral-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               ))}
             </div>
@@ -120,7 +120,7 @@ function VerifyOtpContent() {
             </div>
           </form>
 
-          <p className="mt-4 text-center text-sm text-surface-500">
+          <p className="mt-4 text-center text-sm text-neutral-500">
             Didn&apos;t receive the code?{" "}
             <Link href="/login" className="font-medium text-brand-600 hover:text-brand-500">
               Back to login

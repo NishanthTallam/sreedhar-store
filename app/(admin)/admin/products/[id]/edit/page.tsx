@@ -30,8 +30,8 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Edit Product</h1>
-        <p className="text-sm text-surface-500 mt-1">Editing product ID: {resolvedParams.id}</p>
+        <h1 className="text-2xl font-bold text-neutral-900">Edit Product</h1>
+        <p className="text-sm text-neutral-500 mt-1">Editing product ID: {resolvedParams.id}</p>
       </div>
       <ProductForm 
         initialData={formattedProduct as any} 
