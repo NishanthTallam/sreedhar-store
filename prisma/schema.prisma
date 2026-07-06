@@ -199,6 +199,8 @@ model Variant {
   label        String         // "500ml", "1L", "5L"
   unit         String         // ml, L, kg, g, pcs
   price        Decimal        @db.Decimal(10, 2)
+  mrpPrice     Decimal?       @db.Decimal(10, 2)
+  discount     Decimal?       @db.Decimal(10, 2)
   stock        Int            @default(0)
   lowStockAt   Int            @default(10)  // threshold for low-stock alert
   sku          String         @unique

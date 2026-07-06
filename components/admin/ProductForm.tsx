@@ -17,6 +17,7 @@ type ProductFormProps = {
 export default function ProductForm({ initialData, categories, brands, isEdit = false }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<ProductInput>(initialData || {
@@ -28,7 +29,7 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
     isReturnable: true,
     isActive: true,
     images: [],
-    variants: [{ label: "Default", unit: "pcs", price: 0, stock: 0, lowStockAt: 10, sku: "" }],
+    variants: [{ label: "Default", unit: "pieces", price: 0, mrpPrice: 0, discount: 0, stock: 0, lowStockAt: 10, sku: "", barcode: "" }],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -52,7 +53,7 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
   const addVariant = () => {
     setFormData(prev => ({
       ...prev,
-      variants: [...prev.variants, { label: "", unit: "pcs", price: 0, stock: 0, lowStockAt: 10, sku: "" }]
+      variants: [...prev.variants, { label: "", unit: "pieces", price: 0, mrpPrice: 0, discount: 0, stock: 0, lowStockAt: 10, sku: "", barcode: "" }]
     }));
   };
 
@@ -64,9 +65,41 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
     }));
   };
 
-  const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormData(prev => ({ ...prev, images: value.split(",").map(i => i.trim()).filter(Boolean) }));
+  const removeImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    setUploading(true);
+    const files = Array.from(e.target.files);
+    
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+          method: 'POST',
+          body: file,
+        });
+        const data = await response.json();
+        if (data.url) return data.url;
+        throw new Error(data.error || 'Upload failed');
+      });
+      
+      const uploadedUrls = await Promise.all(uploadPromises);
+      
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, ...uploadedUrls.filter(Boolean)]
+      }));
+    } catch (err: any) {
+      setError(err.message || 'Error uploading images');
+    } finally {
+      setUploading(false);
+      e.target.value = ''; // Reset file input
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -162,9 +195,36 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
           <textarea name="description" value={formData.description || ""} onChange={handleChange} className="w-full rounded-lg border border-neutral-300 p-2 text-sm focus:border-brand-500 focus:ring-brand-500" rows={3} />
         </div>
 
-        <div className="col-span-1 md:col-span-2 space-y-2">
-          <label className="text-sm font-medium text-neutral-900">Images (Comma-separated URLs)</label>
-          <input value={formData.images.join(", ")} onChange={handleImagesChange} placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg" className="w-full rounded-lg border border-neutral-300 p-2 text-sm focus:border-brand-500 focus:ring-brand-500" />
+        <div className="col-span-1 md:col-span-2 space-y-4">
+          <label className="text-sm font-medium text-neutral-900">Images</label>
+          <div className="flex items-center gap-4">
+            <input 
+              type="file" 
+              multiple 
+              accept="image/*" 
+              onChange={handleFileUpload} 
+              disabled={uploading}
+              className="block w-full text-sm text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 disabled:opacity-50" 
+            />
+            {uploading && <span className="text-sm text-brand-600 font-medium">Uploading...</span>}
+          </div>
+          
+          {formData.images.length > 0 && (
+            <div className="grid grid-cols-4 md:grid-cols-6 gap-4">
+              {formData.images.map((url, i) => (
+                <div key={i} className="relative group rounded-lg overflow-hidden border border-neutral-200">
+                  <img src={url} alt={`Preview ${i}`} className="w-full h-24 object-cover" />
+                  <button 
+                    type="button" 
+                    onClick={() => removeImage(i)} 
+                    className="absolute top-1 right-1 bg-white/80 hover:bg-red-50 text-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -196,15 +256,35 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
                 <input required value={variant.label} onChange={(e) => handleVariantChange(index, "label", e.target.value)} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-medium text-neutral-700">Unit (e.g. kg) *</label>
-                <input required value={variant.unit} onChange={(e) => handleVariantChange(index, "unit", e.target.value)} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
+                <label className="text-xs font-medium text-neutral-700">Unit *</label>
+                <select required value={variant.unit} onChange={(e) => handleVariantChange(index, "unit", e.target.value)} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm">
+                  <option value="pieces">Pieces</option>
+                  <option value="kg">Kg</option>
+                  <option value="gram">Gram</option>
+                  <option value="litre">Litre</option>
+                  <option value="millitre">Millilitre</option>
+                  <option value="pack">Pack</option>
+                  <option value="box">Box</option>
+                </select>
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-medium text-neutral-700">SKU *</label>
                 <input required value={variant.sku} onChange={(e) => handleVariantChange(index, "sku", e.target.value)} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-medium text-neutral-700">Price (₹) *</label>
+                <label className="text-xs font-medium text-neutral-700">Barcode</label>
+                <input value={variant.barcode || ""} onChange={(e) => handleVariantChange(index, "barcode", e.target.value)} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-neutral-700">MRP Price (₹)</label>
+                <input type="number" step="0.01" min="0" value={variant.mrpPrice == null || Number.isNaN(variant.mrpPrice as number) ? "" : variant.mrpPrice} onChange={(e) => handleVariantChange(index, "mrpPrice", e.target.value ? parseFloat(e.target.value) : "")} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-neutral-700">Discount (₹/%)</label>
+                <input type="number" step="0.01" min="0" value={variant.discount == null || Number.isNaN(variant.discount as number) ? "" : variant.discount} onChange={(e) => handleVariantChange(index, "discount", e.target.value ? parseFloat(e.target.value) : "")} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-neutral-700">Selling Price (₹) *</label>
                 <input required type="number" step="0.01" min="0" value={Number.isNaN(variant.price as number) ? "" : variant.price} onChange={(e) => handleVariantChange(index, "price", parseFloat(e.target.value))} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
               </div>
               <div className="space-y-1">
@@ -212,7 +292,7 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
                 <input required type="number" min="0" value={Number.isNaN(variant.stock as number) ? "" : variant.stock} onChange={(e) => handleVariantChange(index, "stock", parseInt(e.target.value, 10))} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-medium text-neutral-700">Low Stock Alert *</label>
+                <label className="text-xs font-medium text-neutral-700">Low Alert *</label>
                 <input required type="number" min="0" value={Number.isNaN(variant.lowStockAt as number) ? "" : variant.lowStockAt} onChange={(e) => handleVariantChange(index, "lowStockAt", parseInt(e.target.value, 10))} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
               </div>
             </div>
@@ -237,7 +317,7 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
           <button type="button" onClick={() => router.back()} className="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50">
             Cancel
           </button>
-          <button type="submit" disabled={loading} className="px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:bg-brand-400">
+          <button type="submit" disabled={loading || uploading} className="px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:bg-brand-400">
             {loading ? "Saving..." : isEdit ? "Update Product" : "Create Product"}
           </button>
         </div>

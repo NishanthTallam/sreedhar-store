@@ -24,6 +24,8 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
     variants: product.variants.map(v => ({
       ...v,
       price: Number(v.price),
+      mrpPrice: v.mrpPrice ? Number(v.mrpPrice) : null,
+      discount: v.discount ? Number(v.discount) : null,
     }))
   };
 

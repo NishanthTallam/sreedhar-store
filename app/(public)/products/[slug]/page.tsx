@@ -29,6 +29,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     variants: product.variants.map(v => ({
       ...v,
       price: Number(v.price),
+      mrpPrice: v.mrpPrice ? Number(v.mrpPrice) : null,
+      discount: v.discount ? Number(v.discount) : null,
     }))
   };
 

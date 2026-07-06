@@ -41,13 +41,46 @@ export default function ProductDetailClient({ product }: { product: ProductWithR
           )}
         </div>
         
-        <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-neutral-900 sm:text-4xl">
-          {product.name}
-        </h1>
+        {/* Title */}
+        <div className="mb-6 border-b border-neutral-200">
+          <h1 className="inline-block border-b-4 border-neutral-800 pb-2 text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
+            {product.name}
+          </h1>
+        </div>
 
+        {/* Selected Variant Price Info */}
+        {selectedVariant && (
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-8">
+              <span className="text-5xl font-bold tracking-tight text-neutral-900">₹{selectedVariant.price.toString()}</span>
+              {selectedVariant.mrpPrice && (
+                <div className="flex flex-col pb-1">
+                  <span className="text-lg text-neutral-500 line-through decoration-1">₹{selectedVariant.mrpPrice.toString()}</span>
+                  {selectedVariant.discount && (
+                    <span className="inline-block rounded bg-[#c82020] px-1.5 py-0.5 text-[11px] font-bold text-white tracking-wider w-fit">
+                      {selectedVariant.discount.toString()}% OFF
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-medium text-neutral-900">{selectedVariant.label} {selectedVariant.unit}</span>
+              <button
+                onClick={handleAddToCart}
+                disabled={selectedVariant.stock === 0}
+                className="rounded-lg bg-[#16a34a] px-8 py-2.5 text-base font-bold text-white hover:bg-[#15803d] disabled:bg-neutral-300 disabled:cursor-not-allowed transition-colors"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Variants Selection Grid */}
         {product.variants.length > 0 && selectedVariant && (
-          <div className="mb-8 border-t border-b border-neutral-200 py-6">
-            <h3 className="mb-4 text-sm font-medium text-neutral-900">Select Variant</h3>
+          <div className="mb-8 pt-4">
             <VariantSelector 
               variants={product.variants} 
               selectedId={selectedVariant.id} 
@@ -55,22 +88,6 @@ export default function ProductDetailClient({ product }: { product: ProductWithR
             />
           </div>
         )}
-
-        <div className="mt-auto flex gap-4 pt-8">
-          <button
-            onClick={handleAddToCart}
-            disabled={!selectedVariant || selectedVariant.stock === 0}
-            className="flex flex-1 items-center justify-center rounded-xl bg-brand-600 px-8 py-4 text-base font-medium text-white transition-colors hover:bg-brand-700 disabled:bg-neutral-300 disabled:cursor-not-allowed"
-          >
-            Add to Cart
-          </button>
-          
-          <button className="flex items-center justify-center rounded-xl border border-neutral-300 bg-white p-4 text-neutral-500 hover:bg-neutral-50 hover:text-brand-600 transition-colors">
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-            </svg>
-          </button>
-        </div>
       </div>
     </div>
   );

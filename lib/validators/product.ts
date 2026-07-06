@@ -3,11 +3,14 @@ import { z } from "zod";
 export const variantSchema = z.object({
   id: z.string().optional(),
   label: z.string().min(1, "Label is required"),
-  unit: z.string().min(1, "Unit is required"),
+  unit: z.enum(["pieces", "kg", "gram", "litre", "millitre", "pack", "box"]),
   price: z.coerce.number().min(0, "Price must be positive"),
+  mrpPrice: z.coerce.number().min(0).optional().nullable(),
+  discount: z.coerce.number().min(0).optional().nullable(),
   stock: z.coerce.number().int().min(0, "Stock cannot be negative").default(0),
   lowStockAt: z.coerce.number().int().min(0).default(10),
   sku: z.string().min(1, "SKU is required"),
+  barcode: z.string().optional().nullable(),
 });
 
 export const productSchema = z.object({
