@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     let isAdmin = false;
     if (adminMode) {
       const session = await auth.api.getSession({ headers: await headers() });
-      if (session?.user?.role === "ADMIN") {
+      if ((session?.user as any)?.role === "ADMIN") {
         isAdmin = true;
       }
     }

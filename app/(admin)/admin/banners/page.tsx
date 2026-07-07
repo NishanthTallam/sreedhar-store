@@ -6,6 +6,7 @@ import { BannerType } from "@prisma/client";
 export default function AdminBannersPage() {
   const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form State
@@ -56,6 +57,30 @@ export default function AdminBannersPage() {
       }
     } catch (err: any) {
       alert("Error: " + err.message);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    setUploading(true);
+    const file = e.target.files[0];
+    
+    try {
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+        method: 'POST',
+        body: file,
+      });
+      const data = await response.json();
+      if (data.url) {
+        setFormData(prev => ({ ...prev, imageUrl: data.url }));
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    } catch (err: any) {
+      alert(err.message || 'Error uploading image');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -117,7 +142,30 @@ export default function AdminBannersPage() {
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-neutral-700">Image URL *</label>
-              <input required type="url" value={formData.imageUrl} onChange={e => setFormData({ ...formData, imageUrl: e.target.value })} className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
+              <div className="flex gap-2">
+                <input required type="url" value={formData.imageUrl} onChange={e => setFormData({ ...formData, imageUrl: e.target.value })} className="flex-1 rounded-md border border-neutral-300 p-2 text-sm" />
+                <div className="relative flex-shrink-0">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                  />
+                  <button
+                    type="button"
+                    disabled={uploading}
+                    className="h-full px-4 text-sm font-medium text-neutral-700 bg-neutral-100 border border-neutral-300 rounded-md hover:bg-neutral-200 disabled:opacity-50"
+                  >
+                    {uploading ? "Uploading..." : "Upload"}
+                  </button>
+                </div>
+              </div>
+              {formData.imageUrl && (
+                <div className="mt-2 h-20 w-32 rounded-md overflow-hidden border border-neutral-200 bg-neutral-50 flex items-center justify-center">
+                   <img src={formData.imageUrl} alt="Preview" className="max-h-full max-w-full object-contain" />
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-neutral-700">Link URL (optional)</label>
@@ -129,7 +177,7 @@ export default function AdminBannersPage() {
             </div>
           </div>
           <div className="flex justify-end pt-2">
-            <button type="submit" className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">Save Banner</button>
+            <button type="submit" disabled={uploading} className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:bg-brand-400">Save Banner</button>
           </div>
         </form>
       )}

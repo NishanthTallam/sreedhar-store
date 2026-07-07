@@ -5,7 +5,8 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const betterAuthSessionUrl = new URL("/api/auth/get-session", request.url);
+  const origin = process.env.NODE_ENV === "development" ? "http://localhost:3000" : request.nextUrl.origin;
+  const betterAuthSessionUrl = new URL("/api/auth/get-session", origin);
   
   // Note: For Edge middleware, it's often tricky to query DB directly or use the auth object.
   // The recommended approach in Better Auth is to fetch the session API endpoint, passing headers.

@@ -46,6 +46,30 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
     setFormData(prev => {
       const newVariants = [...prev.variants];
       newVariants[index] = { ...newVariants[index], [field]: value };
+      
+      // If mrpPrice or discount changed, trigger backend calculation
+      if (field === "mrpPrice" || field === "discount") {
+        const mrpPrice = field === "mrpPrice" ? value : newVariants[index].mrpPrice;
+        const discount = field === "discount" ? value : newVariants[index].discount;
+        
+        fetch("/api/products/calculate-price", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mrpPrice, discount })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.price !== undefined) {
+            setFormData(current => {
+              const updatedVariants = [...current.variants];
+              updatedVariants[index] = { ...updatedVariants[index], price: data.price };
+              return { ...current, variants: updatedVariants };
+            });
+          }
+        })
+        .catch(console.error);
+      }
+      
       return { ...prev, variants: newVariants };
     });
   };
@@ -285,7 +309,7 @@ export default function ProductForm({ initialData, categories, brands, isEdit = 
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-medium text-neutral-700">Selling Price (₹) *</label>
-                <input required type="number" step="0.01" min="0" value={Number.isNaN(variant.price as number) ? "" : variant.price} onChange={(e) => handleVariantChange(index, "price", parseFloat(e.target.value))} className="w-full rounded-md border border-neutral-300 p-1.5 text-sm" />
+                <input required readOnly type="number" step="0.01" min="0" value={Number.isNaN(variant.price as number) ? "" : variant.price} className="w-full rounded-md border border-neutral-300 bg-neutral-100 text-neutral-500 cursor-not-allowed p-1.5 text-sm" placeholder="Auto-calculated" />
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-medium text-neutral-700">Stock *</label>

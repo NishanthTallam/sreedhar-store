@@ -12,6 +12,7 @@ type BrandFormProps = {
 export default function BrandForm({ initialData, isEdit = false }: BrandFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<BrandInput>(initialData || {
@@ -25,6 +26,30 @@ export default function BrandForm({ initialData, isEdit = false }: BrandFormProp
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    setUploading(true);
+    const file = e.target.files[0];
+    
+    try {
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+        method: 'POST',
+        body: file,
+      });
+      const data = await response.json();
+      if (data.url) {
+        setFormData(prev => ({ ...prev, logoUrl: data.url }));
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Error uploading image');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,13 +153,36 @@ export default function BrandForm({ initialData, isEdit = false }: BrandFormProp
 
         <div className="col-span-1 md:col-span-2 space-y-2">
           <label className="text-sm font-medium text-neutral-900">Logo URL</label>
-          <input
-            name="logoUrl"
-            value={formData.logoUrl || ""}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-neutral-300 p-2.5 text-sm focus:border-brand-500 focus:ring-brand-500"
-            placeholder="https://example.com/logo.png"
-          />
+          <div className="flex gap-2">
+            <input
+              name="logoUrl"
+              value={formData.logoUrl || ""}
+              onChange={handleChange}
+              className="flex-1 rounded-lg border border-neutral-300 p-2.5 text-sm focus:border-brand-500 focus:ring-brand-500"
+              placeholder="https://example.com/logo.png"
+            />
+            <div className="relative flex-shrink-0">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                disabled={uploading}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+              />
+              <button
+                type="button"
+                disabled={uploading}
+                className="h-full px-4 text-sm font-medium text-neutral-700 bg-neutral-100 border border-neutral-300 rounded-lg hover:bg-neutral-200 disabled:opacity-50"
+              >
+                {uploading ? "Uploading..." : "Upload File"}
+              </button>
+            </div>
+          </div>
+          {formData.logoUrl && (
+            <div className="mt-2 h-20 w-20 rounded-lg overflow-hidden border border-neutral-200 bg-neutral-50 flex items-center justify-center">
+               <img src={formData.logoUrl} alt="Preview" className="max-h-full max-w-full object-contain" />
+            </div>
+          )}
         </div>
       </div>
 
@@ -161,7 +209,7 @@ export default function BrandForm({ initialData, isEdit = false }: BrandFormProp
           </button>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploading}
             className="px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:bg-brand-400"
           >
             {loading ? "Saving..." : isEdit ? "Update Brand" : "Create Brand"}

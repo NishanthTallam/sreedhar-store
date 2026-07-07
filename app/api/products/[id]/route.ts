@@ -61,7 +61,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             create: variants.map((v) => ({
               label: v.label,
               unit: v.unit,
-              price: v.price,
+              price: Math.max(0, (v.mrpPrice || 0) - (v.discount || 0)),
               mrpPrice: v.mrpPrice,
               discount: v.discount,
               stock: v.stock,
