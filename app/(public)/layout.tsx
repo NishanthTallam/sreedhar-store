@@ -1,4 +1,5 @@
 // app/(public)/layout.tsx
+import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CategoryNav } from "@/components/layout/CategoryNav";
@@ -16,7 +17,9 @@ export default async function PublicLayout({
 
   return (
     <>
-      <Header />
+      <Suspense fallback={<div className="h-16 w-full border-b bg-white" />}>
+        <Header />
+      </Suspense>
       <CategoryNav categories={categories} />
       <main className="flex-1">{children}</main>
       <Footer />

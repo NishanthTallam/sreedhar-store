@@ -1,56 +1,30 @@
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/rbac";
 import { NotificationList } from "@/components/notifications/NotificationList";
-import { NotificationCategory } from "@prisma/client";
-import Link from "next/link";
+import { MarkAllReadButton } from "./MarkAllReadButton";
 
-export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ category?: string, unread?: string }> }) {
+export default async function NotificationsPage() {
   const session = await requireAuth();
-  const resolvedParams = await searchParams;
-
-  const category = resolvedParams.category as NotificationCategory | undefined;
-  const unreadOnly = resolvedParams.unread === "true";
-
-  const where: any = { userId: session.user.id };
-  if (category) where.category = category;
-  if (unreadOnly) where.isRead = false;
 
   const notifications = await prisma.notification.findMany({
-    where,
+    where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
   });
 
-  const categories = Object.values(NotificationCategory);
-
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Notifications</h1>
-        <p className="text-sm text-neutral-500 mt-1">Stay updated with your orders and offers.</p>
+      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-900">Notifications</h1>
+          <p className="text-sm text-neutral-500 mt-1">Stay updated with your orders and offers.</p>
+        </div>
+        <MarkAllReadButton />
       </div>
 
       <div className="flex flex-wrap items-center gap-2 pb-4 border-b border-neutral-200">
-        <Link 
-          href="/account/notifications" 
-          className={`px-3 py-1.5 rounded-full text-sm font-medium ${!category && !unreadOnly ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}`}
-        >
+        <span className="px-3 py-1.5 rounded-full text-sm font-medium bg-neutral-900 text-white">
           All
-        </Link>
-        <Link 
-          href="/account/notifications?unread=true" 
-          className={`px-3 py-1.5 rounded-full text-sm font-medium ${!category && unreadOnly ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}`}
-        >
-          Unread
-        </Link>
-        {categories.map((cat) => (
-          <Link 
-            key={cat}
-            href={`/account/notifications?category=${cat}`} 
-            className={`px-3 py-1.5 rounded-full text-sm font-medium ${category === cat ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'}`}
-          >
-            {cat}
-          </Link>
-        ))}
+        </span>
       </div>
 
       <NotificationList initialNotifications={notifications} />

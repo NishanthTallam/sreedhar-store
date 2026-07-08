@@ -5,11 +5,13 @@ import Link from "next/link";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { CouponInput } from "@/components/cart/CouponInput";
 import { useRouter } from "next/navigation";
+import { useWishlist } from "@/components/providers/WishlistProvider";
 
 export default function CartPage() {
   const router = useRouter();
   const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { refreshWishlist } = useWishlist();
 
   useEffect(() => {
     fetchCart();
@@ -58,6 +60,20 @@ export default function CartPage() {
     return json;
   };
 
+  const handleMoveToWishlist = async (id: string, productId: string) => {
+    // Add to wishlist
+    const res = await fetch("/api/wishlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId })
+    });
+    if (res.ok) {
+      await refreshWishlist();
+    }
+    // Remove from cart
+    await handleRemoveItem(id);
+  };
+
   if (loading) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 text-center">
@@ -95,13 +111,16 @@ export default function CartPage() {
                   key={item.id}
                   item={{
                     id: item.id,
+                    productId: item.variant.product.id,
                     productName: item.variant.product.name,
                     variantLabel: item.variant.label,
                     price: Number(item.variant.price),
                     quantity: item.quantity,
+                    imageUrl: item.variant.product.images?.[0]
                   }}
                   onUpdateQuantity={handleUpdateQuantity}
                   onRemove={handleRemoveItem}
+                  onMoveToWishlist={handleMoveToWishlist}
                 />
               ))}
             </div>

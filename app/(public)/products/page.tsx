@@ -1,26 +1,43 @@
 import { prisma } from "@/lib/prisma";
 import { ProductCard } from "@/components/product/ProductCard";
+import Link from "next/link";
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string, brand?: string, minPrice?: string, maxPrice?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
   const q = resolvedSearchParams.q || "";
+  const brandParam = resolvedSearchParams.brand || "";
+  const minPrice = resolvedSearchParams.minPrice ? Number(resolvedSearchParams.minPrice) : undefined;
+  const maxPrice = resolvedSearchParams.maxPrice ? Number(resolvedSearchParams.maxPrice) : undefined;
 
-  const where = q
-    ? {
-        isActive: true,
-        name: { contains: q, mode: "insensitive" as const },
+  const where: any = { isActive: true };
+  if (q) {
+    where.name = { contains: q, mode: "insensitive" };
+  }
+  if (brandParam) {
+    where.brand = { slug: brandParam };
+  }
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    where.variants = {
+      some: {
+        price: {
+          ...(minPrice !== undefined ? { gte: minPrice } : {}),
+          ...(maxPrice !== undefined ? { lte: maxPrice } : {}),
+        }
       }
-    : { isActive: true };
+    };
+  }
 
   const products = await prisma.product.findMany({
     where,
     include: { variants: true, brand: true },
     orderBy: { createdAt: "desc" }
   });
+
+  const allBrands = await prisma.brand.findMany({ orderBy: { name: 'asc' } });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -31,40 +48,83 @@ export default async function ProductsPage({
         )}
       </div>
 
-      {/* Basic Search Bar */}
-      <form className="mb-8 flex max-w-md gap-2" action="/products" method="GET">
-        <input
-          type="search"
-          name="q"
-          defaultValue={q}
-          placeholder="Search products..."
-          className="flex-1 rounded-lg border border-neutral-300 px-4 py-2 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-        />
-        <button type="submit" className="rounded-lg bg-neutral-900 px-4 py-2 font-medium text-white hover:bg-neutral-800">
-          Search
-        </button>
-      </form>
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Filters Sidebar */}
+        <div className="w-full md:w-64 flex-shrink-0 space-y-6">
+          <form action="/products" method="GET" className="space-y-6 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+            {q && <input type="hidden" name="q" value={q} />}
+            
+            <div>
+              <h3 className="font-semibold text-neutral-900 mb-3">Brand</h3>
+              <select 
+                name="brand" 
+                defaultValue={brandParam}
+                className="w-full rounded-md border border-neutral-300 py-2 px-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              >
+                <option value="">All Brands</option>
+                {allBrands.map(b => (
+                  <option key={b.id} value={b.slug}>{b.name}</option>
+                ))}
+              </select>
+            </div>
 
-      {products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {products.map((product) => (
-            <ProductCard 
-              key={product.id} 
-              id={product.id} 
-              name={product.name} 
-              slug={product.slug} 
-              brandName={product.brand?.name} 
-              imageUrl={product.images[0] || ""} 
-              startingPrice={Number(product.variants?.[0]?.price) || 0} 
-              stockStatus={product.variants?.[0]?.stock > 0 ? "in-stock" : "out-of-stock"} 
-            />
-          ))}
+            <div>
+              <h3 className="font-semibold text-neutral-900 mb-3">Price Range (₹)</h3>
+              <div className="flex items-center gap-2">
+                <input 
+                  type="number" 
+                  name="minPrice" 
+                  defaultValue={minPrice} 
+                  placeholder="Min" 
+                  min="0"
+                  className="w-full rounded-md border border-neutral-300 py-2 px-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500" 
+                />
+                <span className="text-neutral-500">-</span>
+                <input 
+                  type="number" 
+                  name="maxPrice" 
+                  defaultValue={maxPrice} 
+                  placeholder="Max" 
+                  min="0"
+                  className="w-full rounded-md border border-neutral-300 py-2 px-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500" 
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="w-full rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 transition-colors">
+              Apply Filters
+            </button>
+            <Link href="/products" className="block text-center w-full text-sm font-medium text-brand-600 hover:text-brand-700 mt-2">
+              Clear All
+            </Link>
+          </form>
         </div>
-      ) : (
-        <div className="flex min-h-[40vh] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50">
-          <p className="text-neutral-500">No products found.</p>
+
+        {/* Product Grid */}
+        <div className="flex-1">
+          {products.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {products.map((product) => (
+                <ProductCard 
+                  key={product.id} 
+                  id={product.id} 
+                  name={product.name} 
+                  slug={product.slug} 
+                  brandName={product.brand?.name} 
+                  imageUrl={product.images[0] || ""} 
+                  startingPrice={Number(product.variants?.[0]?.price) || 0} 
+                  stockStatus={product.variants?.[0]?.stock > 0 ? "in-stock" : "out-of-stock"} 
+                  variantId={product.variants?.[0]?.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex min-h-[40vh] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50">
+              <p className="text-neutral-500">No products found matching your filters.</p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

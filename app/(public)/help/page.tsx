@@ -51,7 +51,7 @@ export default function HelpPage() {
               <PhoneIcon className="w-6 h-6 text-brand-600 mt-1 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-neutral-900">Phone & WhatsApp</h4>
-                <p className="text-neutral-600 text-sm mt-1">+1 (555) 123-4567</p>
+                <p className="text-neutral-600 text-sm mt-1">+91 7989102722</p>
                 <p className="text-neutral-400 text-xs mt-0.5">Mon-Sat, 9AM to 6PM</p>
               </div>
             </div>
@@ -60,7 +60,7 @@ export default function HelpPage() {
               <EnvelopeIcon className="w-6 h-6 text-brand-600 mt-1 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-neutral-900">Email</h4>
-                <p className="text-neutral-600 text-sm mt-1">support@generalstore.com</p>
+                <p className="text-neutral-600 text-sm mt-1">tallamnishanth@gmail.com</p>
               </div>
             </div>
 

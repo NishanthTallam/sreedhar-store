@@ -89,6 +89,7 @@ export default async function HomePage() {
                   startingPrice={lowestPrice}
                   avgRating={product.avgRating ? Number(product.avgRating) : undefined}
                   stockStatus={!hasStock ? "out-of-stock" : isLowStock ? "low-stock" : "in-stock"}
+                  variantId={product.variants?.[0]?.id}
                 />
               )
             })}

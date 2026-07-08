@@ -27,6 +27,10 @@ export const metadata: Metadata = {
 
 import { BottomTabBar } from "@/components/layout/BottomTabBar";
 
+import { CartProvider } from "@/components/providers/CartProvider";
+import { NotificationProvider } from "@/components/providers/NotificationProvider";
+import { WishlistProvider } from "@/components/providers/WishlistProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,8 +39,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased">
-        {children}
-        <BottomTabBar />
+        <NotificationProvider>
+          <WishlistProvider>
+            <CartProvider>
+              {children}
+              <BottomTabBar />
+            </CartProvider>
+          </WishlistProvider>
+        </NotificationProvider>
       </body>
     </html>
   );
