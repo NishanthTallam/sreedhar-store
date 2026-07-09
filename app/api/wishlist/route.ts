@@ -57,7 +57,14 @@ export async function GET(req: Request) {
     }
     const items = await prisma.wishlistItem.findMany({
       where: { userId: session.user.id },
-      include: { product: true }
+      include: { 
+        product: {
+          include: {
+            variants: true,
+            brand: true
+          }
+        } 
+      }
     });
     return NextResponse.json({ success: true, data: items });
   } catch (error) {

@@ -11,15 +11,15 @@ import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle } from 
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/DropdownMenu"
 import { Avatar } from "@/components/ui/Avatar"
 import { useSession, signOut } from "@/lib/auth-client"
-import { useCart } from "@/components/providers/CartProvider"
 import { useNotifications } from "@/components/providers/NotificationProvider"
-import { useWishlist } from "@/components/providers/WishlistProvider"
+import { useStore } from "@/store/useStore"
 
 export function Header() {
   const { data: session } = useSession();
-  const { cartCount } = useCart();
+  const { cartData, wishlistData } = useStore();
+  const cartCount = cartData?.items?.length || 0;
+  const wishlistCount = wishlistData?.length || 0;
   const { unreadCount } = useNotifications();
-  const { wishlistCount } = useWishlist();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -50,7 +50,8 @@ export function Header() {
             }
           },
           (err) => {
-            console.error("Geolocation error", err);
+            // Silently handle and prevent repeated prompts if denied
+            sessionStorage.setItem("user_location", "Select Location");
           }
         );
       } else {
@@ -90,9 +91,6 @@ export function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if ((session?.user as any)?.role === "ADMIN") {
-    return null;
-  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,14 +126,14 @@ export function Header() {
             </DrawerContent>
           </Drawer>
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-brand-700">General Store</span>
+            <span className="text-xl font-bold text-brand-700">Sreedhar Store</span>
           </Link>
         </div>
 
         {/* Desktop: Logo & Location */}
         <div className="hidden md:flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-brand-700">General Store</span>
+            <span className="text-2xl font-bold text-brand-700">Sreedhar Store</span>
           </Link>
           <button className="flex items-center gap-2 text-sm text-neutral-600 hover:text-brand-600 transition-colors">
             <MapPin className="h-4 w-4" />

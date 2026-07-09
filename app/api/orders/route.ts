@@ -113,6 +113,9 @@ export async function POST(req: Request) {
       await tx.cart.update({ where: { id: cart.id }, data: { couponId: null } });
 
       return newOrder;
+    }, {
+      maxWait: 5000, // default is 2000
+      timeout: 20000 // default is 5000 (5 seconds) - increasing to 20 seconds
     });
 
     // 6. Send Email Notification (Async)

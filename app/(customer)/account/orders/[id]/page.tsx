@@ -73,18 +73,27 @@ export default async function OrderDetailsPage(props: { params: Promise<{ id: st
           </p>
         </div>
         
-        {/* Cancel Order Button */}
-        {(order.status === "PLACED" || order.status === "CONFIRMED") && (
-          <form action={`/api/orders/${order.id}/status`} method="POST">
-            <input type="hidden" name="status" value="CANCELLED" />
-            <button
-              type="submit"
-              className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50"
-            >
-              Cancel Order
-            </button>
-          </form>
-        )}
+        {/* Actions (Cancel, Invoice) */}
+        <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
+          <a
+            href={`/api/orders/${order.id}/invoice`}
+            target="_blank"
+            className="inline-flex justify-center items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-600 shadow-sm ring-1 ring-inset ring-brand-300 hover:bg-brand-50"
+          >
+            Download Invoice
+          </a>
+          {(order.status === "PLACED" || order.status === "CONFIRMED") && (
+            <form action={`/api/orders/${order.id}/status`} method="POST">
+              <input type="hidden" name="status" value="CANCELLED" />
+              <button
+                type="submit"
+                className="w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50"
+              >
+                Cancel Order
+              </button>
+            </form>
+          )}
+        </div>
       </div>
 
       {/* Status Stepper */}

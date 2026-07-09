@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
 import { RatingStars } from "@/components/ui/RatingStars"
 import { WishlistButton } from "./WishlistButton"
-import { useCart } from "@/components/providers/CartProvider"
+import { useCart } from "@/hooks/useCart"
+import { useStore } from "@/store/useStore"
 
 interface ProductCardProps {
   id: string
@@ -34,35 +35,37 @@ export function ProductCard({
   isWishlisted = false,
   variantId,
 }: ProductCardProps) {
-  const { refreshCart } = useCart();
-  const [isAdding, setIsAdding] = React.useState(false);
+  const { addToCart, isAdding } = useCart();
+  const { cartData } = useStore();
+  
+  const isInCart = variantId ? cartData?.items?.some(item => item.variantId === variantId) : false;
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!variantId) return;
+    if (!variantId || isInCart) return;
 
-    setIsAdding(true);
-    try {
-      const res = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ variantId, quantity: 1 }),
-      });
-      if (res.ok) {
-        await refreshCart();
-      }
-    } catch (err) {
-      console.error("Failed to add to cart", err);
-    } finally {
-      setIsAdding(false);
-    }
+    addToCart({ 
+      variantId, 
+      quantity: 1, 
+      variant: { 
+        id: variantId, 
+        productId: id, 
+        price: startingPrice, 
+        mrpPrice: startingPrice,
+        product: { id, name, images: [imageUrl] } 
+      } 
+    });
   };
 
   return (
     <div className="group relative flex flex-col rounded-lg border border-neutral-200 bg-white p-3 shadow-card transition-shadow hover:shadow-elevated sm:p-4">
       {/* Top right badges / wishlist */}
       <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-2">
-        <WishlistButton productId={id} initialIsWishlisted={isWishlisted} />
+        <WishlistButton 
+          productId={id} 
+          initialIsWishlisted={isWishlisted} 
+          product={{ id, name, images: [imageUrl] }}
+        />
         {stockStatus !== "in-stock" && (
           <Badge
             variant="stock"
@@ -106,9 +109,9 @@ export function ProductCard({
 
       <div className="mt-4 pt-3 border-t border-neutral-100">
         {stockStatus !== "out-of-stock" ? (
-          <Button className="w-full gap-2 sm:hidden" size="sm" onClick={handleAddToCart} disabled={isAdding}>
+          <Button className="w-full gap-2 sm:hidden" size="sm" onClick={handleAddToCart} disabled={isAdding || isInCart}>
             <ShoppingCart className="h-4 w-4" />
-            {isAdding ? "Adding..." : "Add"}
+            {isInCart ? "In Cart" : isAdding ? "Adding..." : "Add"}
           </Button>
         ) : (
           <Button className="w-full sm:hidden" size="sm" variant="secondary" disabled>
@@ -118,9 +121,9 @@ export function ProductCard({
         
         {/* Desktop inline Add button */}
         {stockStatus !== "out-of-stock" ? (
-          <Button className="hidden w-full gap-2 sm:flex" size="md" onClick={handleAddToCart} disabled={isAdding}>
+          <Button className="hidden w-full gap-2 sm:flex" size="md" onClick={handleAddToCart} disabled={isAdding || isInCart}>
             <ShoppingCart className="h-4 w-4" />
-            {isAdding ? "Adding..." : "Add to Cart"}
+            {isInCart ? "In Cart" : isAdding ? "Adding..." : "Add to Cart"}
           </Button>
         ) : (
           <Button className="hidden w-full sm:flex" size="md" variant="secondary" disabled>

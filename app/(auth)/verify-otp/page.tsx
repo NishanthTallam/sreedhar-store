@@ -72,61 +72,65 @@ function VerifyOtpContent() {
   };
 
   return (
-    <div className="flex min-h-[70vh] flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-neutral-900">
-          Enter verification code
+    <div className="w-full">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold tracking-tight text-neutral-900 mb-2">
+          Verify your identity
         </h2>
-        <p className="mt-2 text-center text-sm text-neutral-600">
+        <p className="text-sm text-neutral-500 leading-relaxed">
           We sent a 6-digit code to{" "}
-          <span className="font-medium text-neutral-900">{email || "your email"}</span>
+          <span className="font-semibold text-neutral-900">{email || "your email"}</span>
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 border border-neutral-200">
-          <form className="space-y-6" onSubmit={handleVerify}>
-            {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm border border-red-100">
-                {error}
-              </div>
-            )}
+      <form className="space-y-6" onSubmit={handleVerify}>
+        {error && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm border border-red-100">
+            {error}
+          </div>
+        )}
 
-            {/* OTP input boxes */}
-            <div className="flex justify-center gap-3" onPaste={handlePaste}>
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  ref={(el) => { inputRefs.current[index] = el; }}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="h-12 w-12 rounded-md border border-neutral-300 bg-white text-center text-lg font-bold text-neutral-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                />
-              ))}
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex w-full justify-center rounded-md border border-transparent bg-brand-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50"
-              >
-                {loading ? "Verifying..." : "Verify Code"}
-              </button>
-            </div>
-          </form>
-
-          <p className="mt-4 text-center text-sm text-neutral-500">
-            Didn&apos;t receive the code?{" "}
-            <Link href="/login" className="font-medium text-brand-600 hover:text-brand-500">
-              Back to login
-            </Link>
-          </p>
+        {/* OTP input boxes */}
+        <div className="flex justify-between gap-2" onPaste={handlePaste}>
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => { inputRefs.current[index] = el; }}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg border border-neutral-300 bg-white text-center text-xl font-bold text-neutral-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
+            />
+          ))}
         </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-6 flex w-full items-center justify-center rounded-lg bg-brand-600 py-3 px-4 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
+        >
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Verifying...
+            </span>
+          ) : (
+            "Verify Code"
+          )}
+        </button>
+      </form>
+
+      <div className="mt-8 text-center text-sm text-neutral-500">
+        Didn&apos;t receive the code?{" "}
+        <Link href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
+          Back to login
+        </Link>
       </div>
     </div>
   );
@@ -134,7 +138,14 @@ function VerifyOtpContent() {
 
 export default function VerifyOtpPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+    <Suspense fallback={
+      <div className="flex justify-center items-center h-40">
+        <svg className="animate-spin h-6 w-6 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+    }>
       <VerifyOtpContent />
     </Suspense>
   );

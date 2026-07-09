@@ -3,39 +3,47 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AddressMapPicker } from "@/components/maps/AddressMapPicker";
+import { useCart } from "@/hooks/useCart";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const [cart, setCart] = useState<any>(null);
+  const { cartData: cart, isLoading: isCartLoading } = useCart();
+  const [profile, setProfile] = useState<any>(null);
   const [addresses, setAddresses] = useState<any[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
 
   useEffect(() => {
-    // In a real flow, we fetch user's cart and addresses
-    // We stub it here for the UI flow demonstration
-    fetchCart();
-    fetchAddresses();
+    fetchCheckoutData();
   }, []);
 
-  const fetchCart = async () => {
-    const res = await fetch("/api/cart");
-    if (res.ok) {
-      const json = await res.json();
-      if (!json.data || json.data.items.length === 0) {
-        router.push("/cart"); // Redirect back if empty
+  const fetchCheckoutData = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/checkout/init");
+      if (res.ok) {
+        const json = await res.json();
+        setProfile(json.data.user);
+        setAddresses(json.data.addresses);
+        if (json.data.addresses.length > 0) {
+          // Default to the first address since they are ordered by isDefault DESC
+          setSelectedAddressId(json.data.addresses[0].id);
+        }
       }
-      setCart(json.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const fetchAddresses = async () => {
-    // Stub addresses. In reality, fetch from API.
-    setAddresses([
-      { id: "test-addr-1", fullName: "John Doe", type: "HOME", street: "123 Main St, Apartment 4B", city: "Mumbai", state: "MH", pincode: "400001" }
-    ]);
-    setSelectedAddressId("test-addr-1");
-  };
+  useEffect(() => {
+    if (!isCartLoading && (!cart || !cart.items || cart.items.length === 0)) {
+      router.push("/cart");
+    }
+  }, [cart, isCartLoading, router]);
 
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) return alert("Please select an address");
@@ -66,14 +74,63 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!cart) {
+  const handleAddressSelect = async (addressData: any) => {
+    setIsSavingAddress(true);
+    try {
+      const res = await fetch("/api/addresses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: profile?.name || "Customer",
+          mobile: profile?.phone || "0000000000",
+          houseNo: "",
+          street: addressData.street || addressData.formattedAddress,
+          city: addressData.city || "Bukkapatnam",
+          state: addressData.state || "Andhra Pradesh",
+          pincode: addressData.pincode || "515144",
+          latitude: addressData.latitude,
+          longitude: addressData.longitude,
+          type: "HOME"
+        })
+      });
+      
+      const json = await res.json();
+      if (res.ok) {
+        // Refresh addresses
+        fetchCheckoutData();
+        // The newly added address will be selected since it's the most recent (handled in fetch or we can manually select it if we sort them, but let's just refetch)
+      } else {
+        alert(json.error || "Failed to save address");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error saving address");
+    } finally {
+      setIsSavingAddress(false);
+    }
+  };
+
+  if (isLoading || isCartLoading || !cart) {
     return <div className="p-16 text-center text-neutral-500">Loading checkout...</div>;
   }
 
   const subtotal = cart.items.reduce((acc: number, item: any) => acc + (Number(item.variant.price) * item.quantity), 0);
   const deliveryCharge = subtotal > 500 ? 0 : 50; 
-  // Simple stub discount calculation for frontend display. Backend is truth.
-  const discount = cart.coupon ? (cart.coupon.type === "FLAT" ? Number(cart.coupon.value) : subtotal * (Number(cart.coupon.value) / 100)) : 0;
+  
+  // Real coupon calculation
+  let discount = 0;
+  if (cart.coupon) {
+    if (cart.coupon.type === "FLAT") {
+      discount = Number(cart.coupon.value);
+    } else if (cart.coupon.type === "PERCENTAGE") {
+      discount = subtotal * (Number(cart.coupon.value) / 100);
+      if (cart.coupon.maxDiscount && discount > Number(cart.coupon.maxDiscount)) {
+        discount = Number(cart.coupon.maxDiscount);
+      }
+    }
+    // Discount cannot exceed subtotal
+    discount = Math.min(discount, subtotal);
+  }
   const total = subtotal + deliveryCharge - discount;
 
   return (
@@ -83,31 +140,62 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="lg:col-span-8 space-y-6">
           
+          {/* Customer Profile Section */}
+          {profile && (
+            <section className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 text-xl font-semibold text-neutral-900">Customer Profile</h2>
+              <div className="text-sm text-neutral-700">
+                <p><strong>Name:</strong> {profile.name}</p>
+                <p><strong>Email:</strong> {profile.email}</p>
+                <p><strong>Phone:</strong> {profile.phone || "Not provided"}</p>
+              </div>
+            </section>
+          )}
+
           {/* Address Section */}
           <section className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
             <h2 className="mb-4 text-xl font-semibold text-neutral-900">Delivery Address</h2>
             <div className="space-y-4">
-              {addresses.map((addr) => (
-                <label key={addr.id} className={`flex cursor-pointer gap-4 rounded-xl border p-4 transition-colors ${selectedAddressId === addr.id ? 'border-brand-500 bg-brand-50' : 'border-neutral-200 hover:border-neutral-300'}`}>
-                  <input
-                    type="radio"
-                    name="address"
-                    className="mt-1 h-4 w-4 text-brand-600 focus:ring-brand-500"
-                    checked={selectedAddressId === addr.id}
-                    onChange={() => setSelectedAddressId(addr.id)}
-                  />
-                  <div>
-                    <p className="font-medium text-neutral-900">{addr.fullName} <span className="ml-2 inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-800">{addr.type}</span></p>
-                    <p className="mt-1 text-sm text-neutral-500">{addr.street}</p>
-                    <p className="text-sm text-neutral-500">{addr.city}, {addr.state} {addr.pincode}</p>
-                  </div>
-                </label>
-              ))}
+              {addresses.length === 0 ? (
+                <div className="rounded-xl border border-neutral-200 p-6 text-center">
+                  <p className="text-neutral-500 mb-4">No address found</p>
+                  <button className="inline-flex rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">
+                    + Add Address
+                  </button>
+                </div>
+              ) : (
+                addresses.map((addr) => (
+                  <label key={addr.id} className={`flex cursor-pointer gap-4 rounded-xl border p-4 transition-colors ${selectedAddressId === addr.id ? 'border-brand-500 bg-brand-50' : 'border-neutral-200 hover:border-neutral-300'}`}>
+                    <input
+                      type="radio"
+                      name="address"
+                      className="mt-1 h-4 w-4 text-brand-600 focus:ring-brand-500"
+                      checked={selectedAddressId === addr.id}
+                      onChange={() => setSelectedAddressId(addr.id)}
+                    />
+                    <div>
+                      <p className="font-medium text-neutral-900">
+                        {addr.fullName} 
+                        <span className="ml-2 inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-800">{addr.type}</span>
+                        {addr.isDefault && <span className="ml-2 inline-flex items-center rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-medium text-brand-800">Default</span>}
+                      </p>
+                      <p className="mt-1 text-sm text-neutral-500">{addr.houseNo}, {addr.street}</p>
+                      {addr.landmark && <p className="text-sm text-neutral-500">Landmark: {addr.landmark}</p>}
+                      <p className="text-sm text-neutral-500">{addr.city}, {addr.state} {addr.pincode}</p>
+                      <p className="text-sm text-neutral-500 mt-1">Mobile: {addr.mobile}</p>
+                    </div>
+                  </label>
+                ))
+              )}
               
-              <div className="pt-4 border-t border-neutral-100 mt-4">
-                <p className="text-sm font-medium text-neutral-900 mb-2">Or add a new address via map:</p>
-                <AddressMapPicker />
-              </div>
+              {addresses.length >= 0 && (
+                <div className="pt-4 border-t border-neutral-100 mt-4">
+                  <p className="text-sm font-medium text-neutral-900 mb-2">
+                    {isSavingAddress ? "Saving address..." : "Or add a new address via map:"}
+                  </p>
+                  <AddressMapPicker onAddressSelect={handleAddressSelect} />
+                </div>
+              )}
             </div>
           </section>
 

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { Product, Variant, Brand, Category } from "@prisma/client";
 import { VariantSelector } from "@/components/product/VariantSelector";
+import { useCart } from "@/hooks/useCart";
+import { useStore } from "@/store/useStore";
+import { ShoppingCart } from "lucide-react";
 
 type ProductWithRelations = Product & {
   variants: Variant[];
@@ -12,11 +15,26 @@ type ProductWithRelations = Product & {
 
 export default function ProductDetailClient({ product }: { product: ProductWithRelations }) {
   const [selectedVariant, setSelectedVariant] = useState<Variant>(product.variants[0] || null);
+  
+  const { addToCart, isAdding } = useCart();
+  const { cartData } = useStore();
+
+  const isInCart = selectedVariant ? cartData?.items?.some((item: any) => item.variantId === selectedVariant.id) : false;
 
   const handleAddToCart = () => {
-    if (!selectedVariant) return;
-    // In Phase 2, this will call the cart API.
-    alert(`Added ${product.name} (${selectedVariant.label}) to cart!`);
+    if (!selectedVariant || isInCart) return;
+
+    addToCart({ 
+      variantId: selectedVariant.id, 
+      quantity: 1, 
+      variant: { 
+        id: selectedVariant.id, 
+        productId: product.id, 
+        price: selectedVariant.price, 
+        mrpPrice: selectedVariant.mrpPrice,
+        product: { id: product.id, name: product.name, images: product.images } 
+      } 
+    });
   };
 
   return (
@@ -69,10 +87,11 @@ export default function ProductDetailClient({ product }: { product: ProductWithR
               <span className="text-lg font-medium text-neutral-900">{selectedVariant.label} {selectedVariant.unit}</span>
               <button
                 onClick={handleAddToCart}
-                disabled={selectedVariant.stock === 0}
-                className="rounded-lg bg-[#16a34a] px-8 py-2.5 text-base font-bold text-white hover:bg-[#15803d] disabled:bg-neutral-300 disabled:cursor-not-allowed transition-colors"
+                disabled={selectedVariant.stock === 0 || isAdding || isInCart}
+                className="inline-flex gap-2 items-center rounded-lg bg-[#16a34a] px-8 py-2.5 text-base font-bold text-white hover:bg-[#15803d] disabled:bg-neutral-300 disabled:cursor-not-allowed transition-colors"
               >
-                Add
+                <ShoppingCart className="h-5 w-5" />
+                {selectedVariant.stock === 0 ? "Out of Stock" : isInCart ? "In Cart" : isAdding ? "Adding..." : "Add to Cart"}
               </button>
             </div>
           </div>

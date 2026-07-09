@@ -27,11 +27,10 @@ export default async function InvoicePage(props: { params: Promise<{ id: string 
     notFound();
   }
 
-  const storeSettings = await prisma.storeSetting.findFirst();
-  const storeName = storeSettings?.storeName || "General Store";
-  const storeAddress = storeSettings?.storeAddress || "123 Commerce St, Business City";
-  const supportEmail = storeSettings?.supportEmail || "support@example.com";
-  const supportPhone = storeSettings?.supportPhone || "+1 234 567 890";
+  const storeName = "Sreedhar Store";
+  const storeAddress = "Bukkapatnam, Puttaparthi, Andhra Pradesh";
+  const supportEmail = "tallamnishanth@gmail.com";
+  const supportPhone = "+91 7989102722";
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8 bg-white" id="printable-invoice">
@@ -160,7 +159,7 @@ export default async function InvoicePage(props: { params: Promise<{ id: string 
 
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
-          <p>Thank you for your business!</p>
+          <p>Thank you for shopping with Sreedhar Store.</p>
           <p className="mt-1">If you have any questions about this invoice, please contact {supportEmail}</p>
         </div>
       </div>

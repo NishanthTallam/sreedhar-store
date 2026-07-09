@@ -46,6 +46,16 @@ export async function middleware(request: NextRequest) {
     // We assume any logged in user can see /account, or we could restrict to CUSTOMER
   }
 
+  // Protect auth routes from already logged-in users
+  if (pathname.startsWith("/login") || pathname.startsWith("/register") || pathname.startsWith("/forgot-password")) {
+    if (isAuth) {
+      if (role === "ADMIN") {
+        return NextResponse.redirect(new URL("/admin", request.url));
+      }
+      return NextResponse.redirect(new URL("/account", request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 

@@ -37,6 +37,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               imageUrl={product.images[0] || ""} 
               startingPrice={Number(product.variants?.[0]?.price) || 0} 
               stockStatus={product.variants?.[0]?.stock > 0 ? "in-stock" : "out-of-stock"} 
+              variantId={product.variants?.[0]?.id}
             />
           ))}
         </div>

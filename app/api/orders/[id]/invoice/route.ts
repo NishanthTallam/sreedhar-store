@@ -9,8 +9,8 @@ export async function GET(
 ) {
   try {
     const session = await getSessionUser();
-    if (!session || (session.user as any).role !== "ADMIN") {
-      return new NextResponse("Forbidden", { status: 403 });
+    if (!session) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const order = await prisma.order.findUnique({
@@ -34,11 +34,14 @@ export async function GET(
       return new NextResponse("Order not found", { status: 404 });
     }
 
-    // Get store settings for invoice header (fallback to defaults)
-    const settings = await prisma.storeSetting.findFirst();
-    const storeName = settings?.storeName || "General Store";
-    const storeAddress = settings?.storeAddress || "123 Store Street, City";
-    const storePhone = settings?.supportPhone || "+1 234 567 8900";
+    if ((session.user as any).role !== "ADMIN" && order.userId !== session.user.id) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
+
+    const storeName = "Sreedhar Store";
+    const storeAddress = "Bukkapatnam, Puttaparthi, Andhra Pradesh";
+    const storePhone = "+91 7989102722";
+    const storeEmail = "tallamnishanth@gmail.com";
 
     const html = `
       <!DOCTYPE html>
@@ -78,7 +81,8 @@ export async function GET(
             <div class="store-info">
               <h1>${storeName}</h1>
               <p>${storeAddress}</p>
-              <p>${storePhone}</p>
+              <p>Email: ${storeEmail}</p>
+              <p>Phone: ${storePhone}</p>
             </div>
             <div class="invoice-details">
               <h2>INVOICE</h2>
@@ -150,6 +154,16 @@ export async function GET(
             <div class="total-row">
               <span>Payment Method:</span>
               <span>${order.paymentMethod}</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 60px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <p style="color: #666; font-size: 14px;">Thank you for shopping with Sreedhar Store</p>
+            </div>
+            <div style="text-align: center;">
+              <div style="border-bottom: 1px solid #111; width: 200px; margin-bottom: 5px;"></div>
+              <p style="color: #111; font-size: 14px; font-weight: bold;">Authorized Signature</p>
             </div>
           </div>
 

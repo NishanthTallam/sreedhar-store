@@ -2,55 +2,37 @@
 
 import { Heart, Search, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { removeWishlistItem } from "./actions";
-import { useCart } from "@/components/providers/CartProvider";
-import { useWishlist } from "@/components/providers/WishlistProvider";
+import { useEffect, useState } from "react";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useStore } from "@/store/useStore";
 
 export function WishlistClientList({ initialItems }: { initialItems: any[] }) {
-  const [items, setItems] = useState(initialItems);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [addingId, setAddingId] = useState<string | null>(null);
-  const { refreshCart } = useCart();
-  const { refreshWishlist } = useWishlist();
+  const { moveFromWishlist, isAdding } = useCart();
+  const { toggleWishlist } = useWishlist();
+  const { wishlistData, setWishlistData } = useStore();
+
+  useEffect(() => {
+    if (initialItems && wishlistData.length === 0) {
+      setWishlistData(initialItems);
+    }
+  }, [initialItems, setWishlistData, wishlistData.length]);
+
+  const items = wishlistData?.length > 0 ? wishlistData : initialItems;
 
   const filteredItems = items.filter(item => 
     item.product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     item.product.brand?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleRemove = async (productId: string) => {
-    setLoadingId(productId);
-    const res = await removeWishlistItem(productId);
-    if (res.success) {
-      setItems(items.filter(item => item.productId !== productId));
-      await refreshWishlist();
-    } else {
-      alert(res.error);
-    }
-    setLoadingId(null);
+  const handleRemove = (product: any) => {
+    toggleWishlist({ product, isWishlisted: true });
   };
 
-  const handleAddToCart = async (variantId: string, productId: string) => {
+  const handleAddToCart = (variantId: string, product: any) => {
     if (!variantId) return;
-    setAddingId(variantId);
-    try {
-      const res = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ variantId, quantity: 1 }),
-      });
-      if (res.ok) {
-        await refreshCart();
-        // Also remove from wishlist
-        await handleRemove(productId);
-      }
-    } catch (err) {
-      console.error("Failed to add to cart", err);
-    } finally {
-      setAddingId(null);
-    }
+    moveFromWishlist({ variantId, productId: product.id, variant: { id: variantId, productId: product.id, product }, product });
   };
 
   return (
@@ -100,9 +82,8 @@ export function WishlistClientList({ initialItems }: { initialItems: any[] }) {
                     <div className="text-4xl text-neutral-400">📦</div>
                   )}
                   <button 
-                    onClick={() => handleRemove(product.id)}
-                    disabled={loadingId === product.id}
-                    className="absolute right-2 top-2 rounded-full p-1.5 text-danger-500 hover:bg-neutral-200/50 transition-colors disabled:opacity-50"
+                    onClick={() => handleRemove(product)}
+                    className="absolute right-2 top-2 rounded-full p-1.5 text-danger-500 hover:bg-neutral-200/50 transition-colors"
                   >
                     <Heart className="h-5 w-5 fill-current" />
                   </button>
@@ -120,8 +101,8 @@ export function WishlistClientList({ initialItems }: { initialItems: any[] }) {
                     </div>
                     {hasStock ? (
                       <button 
-                        onClick={() => handleAddToCart(variantId, product.id)}
-                        disabled={addingId === variantId || !variantId}
+                        onClick={() => handleAddToCart(variantId, product)}
+                        disabled={!variantId}
                         className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-brand-500 text-white transition-colors hover:bg-brand-600 disabled:opacity-50"
                       >
                         <ShoppingCart className="h-4 w-4" />

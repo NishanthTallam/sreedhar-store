@@ -26,7 +26,9 @@ export const metadata: Metadata = {
 };
 
 import { BottomTabBar } from "@/components/layout/BottomTabBar";
+import { Toaster } from "@/components/ui/Toaster";
 
+import { QueryProvider } from "@/components/providers/QueryProvider";
 import { CartProvider } from "@/components/providers/CartProvider";
 import { NotificationProvider } from "@/components/providers/NotificationProvider";
 import { WishlistProvider } from "@/components/providers/WishlistProvider";
@@ -39,14 +41,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased">
-        <NotificationProvider>
-          <WishlistProvider>
-            <CartProvider>
-              {children}
-              <BottomTabBar />
-            </CartProvider>
-          </WishlistProvider>
-        </NotificationProvider>
+        <QueryProvider>
+          <NotificationProvider>
+            <WishlistProvider>
+              <CartProvider>
+                {children}
+                <BottomTabBar />
+                <Toaster />
+              </CartProvider>
+            </WishlistProvider>
+          </NotificationProvider>
+        </QueryProvider>
       </body>
     </html>
   );

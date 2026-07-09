@@ -1,52 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { CouponInput } from "@/components/cart/CouponInput";
 import { useRouter } from "next/navigation";
-import { useWishlist } from "@/components/providers/WishlistProvider";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useStore } from "@/store/useStore";
 
 export default function CartPage() {
   const router = useRouter();
-  const [cart, setCart] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const { refreshWishlist } = useWishlist();
+  const { isLoading, updateQuantity, removeFromCart, refreshCart } = useCart();
+  const { moveFromCart } = useWishlist();
+  const { cartData } = useStore();
 
   useEffect(() => {
-    fetchCart();
+    // Initial fetch handled by React Query, this is just to ensure it's fresh if needed
+    // refreshCart is optional here since query auto-fetches on mount
   }, []);
 
-  const fetchCart = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/cart");
-      if (res.ok) {
-        const json = await res.json();
-        setCart(json.data);
-      } else {
-        // If 401, cart might be empty or user not logged in
-        setCart(null);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+  const handleUpdateQuantity = (id: string, newQuantity: number) => {
+    updateQuantity({ id, quantity: newQuantity });
   };
 
-  const handleUpdateQuantity = async (id: string, newQuantity: number) => {
-    await fetch("/api/cart", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, quantity: newQuantity })
-    });
-    fetchCart();
-  };
-
-  const handleRemoveItem = async (id: string) => {
-    await fetch(`/api/cart?id=${id}`, { method: "DELETE" });
-    fetchCart();
+  const handleRemoveItem = (id: string) => {
+    removeFromCart(id);
   };
 
   const handleApplyCoupon = async (code: string) => {
@@ -56,25 +35,15 @@ export default function CartPage() {
       body: JSON.stringify({ code })
     });
     const json = await res.json();
-    if (res.ok) fetchCart();
+    if (res.ok) refreshCart();
     return json;
   };
 
-  const handleMoveToWishlist = async (id: string, productId: string) => {
-    // Add to wishlist
-    const res = await fetch("/api/wishlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId })
-    });
-    if (res.ok) {
-      await refreshWishlist();
-    }
-    // Remove from cart
-    await handleRemoveItem(id);
+  const handleMoveToWishlist = (id: string, productId: string) => {
+    moveFromCart({ cartItemId: id, productId, product: { id: productId } });
   };
 
-  if (loading) {
+  if (isLoading && !cartData) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 text-center">
         <p className="text-neutral-500">Loading cart...</p>
@@ -82,7 +51,7 @@ export default function CartPage() {
     );
   }
 
-  if (!cart || cart.items.length === 0) {
+  if (!cartData || !cartData.items || cartData.items.length === 0) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 text-center">
         <h1 className="text-3xl font-bold text-neutral-900 mb-4">Your Cart is Empty</h1>
@@ -94,7 +63,7 @@ export default function CartPage() {
     );
   }
 
-  const subtotal = cart.items.reduce((acc: number, item: any) => acc + (Number(item.variant.price) * item.quantity), 0);
+  const subtotal = cartData.items.reduce((acc: number, item: any) => acc + (Number(item.variant?.price || 0) * item.quantity), 0);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -104,19 +73,19 @@ export default function CartPage() {
         {/* Cart Items List */}
         <div className="lg:col-span-8">
           <div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-neutral-900">Items ({cart.items.length})</h2>
+            <h2 className="mb-4 text-lg font-semibold text-neutral-900">Items ({cartData.items.length})</h2>
             <div className="flex flex-col">
-              {cart.items.map((item: any) => (
+              {cartData.items.map((item: any) => (
                 <CartItemCard
                   key={item.id}
                   item={{
                     id: item.id,
-                    productId: item.variant.product.id,
-                    productName: item.variant.product.name,
-                    variantLabel: item.variant.label,
-                    price: Number(item.variant.price),
+                    productId: item.variant?.product?.id || item.variant?.productId,
+                    productName: item.variant?.product?.name || "Product",
+                    variantLabel: item.variant?.label,
+                    price: Number(item.variant?.price || 0),
                     quantity: item.quantity,
-                    imageUrl: item.variant.product.images?.[0]
+                    imageUrl: item.variant?.product?.images?.[0]
                   }}
                   onUpdateQuantity={handleUpdateQuantity}
                   onRemove={handleRemoveItem}
@@ -135,7 +104,7 @@ export default function CartPage() {
             <div className="mb-6 border-b border-neutral-200 pb-6">
               <CouponInput 
                 onApply={handleApplyCoupon} 
-                appliedCoupon={cart.coupon?.code}
+                appliedCoupon={(cartData as any).coupon?.code}
                 onRemove={() => handleApplyCoupon("")}
               />
             </div>
@@ -149,9 +118,9 @@ export default function CartPage() {
                 <dt>Delivery Charge</dt>
                 <dd className="font-medium text-neutral-900">Calculated at checkout</dd>
               </div>
-              {cart.coupon && (
+              {(cartData as any).coupon && (
                 <div className="flex justify-between text-green-600">
-                  <dt>Discount ({cart.coupon.code})</dt>
+                  <dt>Discount ({(cartData as any).coupon.code})</dt>
                   <dd className="font-medium">- Applied at checkout</dd>
                 </div>
               )}
