@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Search, MapPin, Heart, Bell, ShoppingCart, User, Menu, LogOut, Package } from "lucide-react"
 import { Button } from "@/components/ui/Button"
@@ -171,7 +172,7 @@ export function Header() {
                     onClick={() => setShowSuggestions(false)}
                   >
                     {product.images?.[0] && (
-                      <img src={product.images[0]} alt={product.name} className="w-10 h-10 object-cover rounded-md" />
+                      <Image src={product.images[0]} alt={product.name} width={40} height={40} className="object-cover rounded-md" />
                     )}
                     <div className="flex flex-col flex-1">
                       <span className="text-sm font-medium text-neutral-900 line-clamp-1">{product.name}</span>

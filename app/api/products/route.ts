@@ -19,14 +19,37 @@ export async function GET(req: Request) {
 
     const products = await prisma.product.findMany({
       where,
-      include: {
-        brand: true,
-        category: true,
-        variants: true,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        images: true,
+        avgRating: true,
+        brand: { select: { id: true, name: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true } },
+        variants: {
+          select: {
+            id: true,
+            label: true,
+            unit: true,
+            price: true,
+            mrpPrice: true,
+            stock: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
+      take: 50,
     });
-    return NextResponse.json({ success: true, data: products });
+
+    return NextResponse.json(
+      { success: true, data: products },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+        },
+      }
+    );
   } catch (error) {
     console.error("[PRODUCTS_GET]", error);
     return NextResponse.json({ success: false, error: "Failed to fetch products" }, { status: 500 });

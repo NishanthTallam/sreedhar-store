@@ -1,16 +1,29 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
-    include: {
-      category: true,
-      brand: true,
-      variants: true,
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+      images: true,
+      isActive: true,
+      category: { select: { name: true } },
+      brand: { select: { name: true } },
+      variants: {
+        select: {
+          id: true,
+          stock: true,
+        },
+      },
     },
-    orderBy: { createdAt: "desc" }
+    orderBy: { createdAt: "desc" },
+    take: 100,
   });
 
   return (
@@ -48,7 +61,7 @@ export default async function AdminProductsPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       {product.images[0] ? (
-                        <img src={product.images[0]} alt={product.name} className="h-10 w-10 rounded-lg object-cover border border-neutral-100" />
+                        <Image src={product.images[0]} alt={product.name} width={40} height={40} className="rounded-lg object-cover border border-neutral-100" />
                       ) : (
                         <div className="h-10 w-10 rounded-lg bg-neutral-100 border border-neutral-200"></div>
                       )}

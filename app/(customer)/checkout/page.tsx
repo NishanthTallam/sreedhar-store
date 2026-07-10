@@ -2,8 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AddressMapPicker } from "@/components/maps/AddressMapPicker";
+import dynamic from "next/dynamic";
 import { useCart } from "@/hooks/useCart";
+
+// Lazy load the heavy map component (leaflet/Google Maps)
+const AddressMapPicker = dynamic(
+  () => import("@/components/maps/AddressMapPicker").then(mod => mod.AddressMapPicker),
+  { 
+    ssr: false, 
+    loading: () => <div className="h-64 w-full rounded-lg bg-neutral-100 animate-pulse flex items-center justify-center text-neutral-400">Loading map...</div> 
+  }
+);
 
 export default function CheckoutPage() {
   const router = useRouter();

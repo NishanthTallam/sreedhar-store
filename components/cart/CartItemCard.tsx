@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart } from "lucide-react";
+import Image from "next/image";
 
 interface CartItemCardProps {
   item: any; // In a real app, define a proper type
@@ -14,7 +15,7 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove, onMoveT
     <div className="flex gap-4 border-b border-neutral-200 py-4 last:border-0">
       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 relative">
         {item.imageUrl ? (
-          <img src={item.imageUrl} alt={item.productName} className="object-cover h-full w-full" />
+          <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" sizes="96px" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
             No Image

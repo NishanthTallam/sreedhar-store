@@ -35,10 +35,16 @@ export default async function AdminOrdersPage({
   const orders = await prisma.order.findMany({
     where: whereClause,
     orderBy: { createdAt: "desc" },
-    include: {
+    select: {
+      id: true,
+      orderNumber: true,
+      status: true,
+      totalAmount: true,
+      createdAt: true,
       user: { select: { name: true, email: true } },
       deliveryBoy: { select: { name: true } },
     },
+    take: 100,
   });
 
   const getStatusBadgeColor = (status: OrderStatus) => {

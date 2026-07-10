@@ -31,13 +31,34 @@ export default async function ProductsPage({
     };
   }
 
-  const products = await prisma.product.findMany({
-    where,
-    include: { variants: true, brand: true },
-    orderBy: { createdAt: "desc" }
-  });
-
-  const allBrands = await prisma.brand.findMany({ orderBy: { name: 'asc' } });
+  // Fetch products and brands in parallel
+  const [products, allBrands] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        images: true,
+        avgRating: true,
+        variants: {
+          select: {
+            id: true,
+            price: true,
+            stock: true,
+            lowStockAt: true,
+          },
+        },
+        brand: { select: { name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+    prisma.brand.findMany({
+      select: { id: true, name: true, slug: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

@@ -10,19 +10,21 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: {
-        name: true,
-        email: true,
-        phone: true,
-      }
-    });
-
-    const addresses = await prisma.address.findMany({
-      where: { userId: session.user.id },
-      orderBy: { isDefault: 'desc' }
-    });
+    // Fetch user and addresses in parallel
+    const [user, addresses] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+        },
+      }),
+      prisma.address.findMany({
+        where: { userId: session.user.id },
+        orderBy: { isDefault: "desc" },
+      }),
+    ]);
 
     return NextResponse.json({ success: true, data: { user, addresses } });
   } catch (error) {

@@ -1,8 +1,46 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import dynamic from "next/dynamic";
 import { CurrencyDollarIcon, ShoppingBagIcon, UsersIcon, ClockIcon } from "@heroicons/react/24/outline";
+
+// Lazy load recharts components — they are very heavy (~200KB)
+const LazyAreaChart = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.AreaChart })),
+  { ssr: false }
+);
+const LazyBarChart = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.BarChart })),
+  { ssr: false }
+);
+const LazyResponsiveContainer = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.ResponsiveContainer })),
+  { ssr: false }
+);
+const LazyArea = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.Area })),
+  { ssr: false }
+);
+const LazyBar = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.Bar })),
+  { ssr: false }
+);
+const LazyXAxis = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.XAxis })),
+  { ssr: false }
+);
+const LazyYAxis = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.YAxis })),
+  { ssr: false }
+);
+const LazyCartesianGrid = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.CartesianGrid })),
+  { ssr: false }
+);
+const LazyTooltip = dynamic(
+  () => import("recharts").then((mod) => ({ default: mod.Tooltip })),
+  { ssr: false }
+);
 
 export default function AdminDashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -56,24 +94,24 @@ export default function AdminDashboardPage() {
         <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
           <h2 className="text-lg font-bold text-neutral-900">Revenue (Last 30 Days)</h2>
           <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <LazyResponsiveContainer width="100%" height="100%">
+              <LazyAreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.8}/>
                     <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="date" tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} minTickGap={30} />
-                <YAxis tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
-                <Tooltip 
+                <LazyCartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <LazyXAxis dataKey="date" tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} minTickGap={30} />
+                <LazyYAxis tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                <LazyTooltip 
                   contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   formatter={(value: any) => [`$${Number(value).toFixed(2)}`, 'Revenue']}
                 />
-                <Area type="monotone" dataKey="sales" stroke="#0ea5e9" strokeWidth={2} fillOpacity={1} fill="url(#colorSales)" />
-              </AreaChart>
-            </ResponsiveContainer>
+                <LazyArea type="monotone" dataKey="sales" stroke="#0ea5e9" strokeWidth={2} fillOpacity={1} fill="url(#colorSales)" />
+              </LazyAreaChart>
+            </LazyResponsiveContainer>
           </div>
         </div>
 
@@ -81,19 +119,19 @@ export default function AdminDashboardPage() {
         <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-6">
           <h2 className="text-lg font-bold text-neutral-900">Orders (Last 30 Days)</h2>
           <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="date" tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} minTickGap={30} />
-                <YAxis tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} />
-                <Tooltip 
+            <LazyResponsiveContainer width="100%" height="100%">
+              <LazyBarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <LazyCartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <LazyXAxis dataKey="date" tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} minTickGap={30} />
+                <LazyYAxis tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} />
+                <LazyTooltip 
                   cursor={{fill: '#f1f5f9'}}
                   contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   formatter={(value: any) => [value, 'Orders']}
                 />
-                <Bar dataKey="orders" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
+                <LazyBar dataKey="orders" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              </LazyBarChart>
+            </LazyResponsiveContainer>
           </div>
         </div>
       </div>

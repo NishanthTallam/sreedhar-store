@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Product, Variant, Brand, Category } from "@prisma/client";
 import { VariantSelector } from "@/components/product/VariantSelector";
 import { useCart } from "@/hooks/useCart";
@@ -40,9 +41,16 @@ export default function ProductDetailClient({ product }: { product: ProductWithR
   return (
     <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
       {/* Image Gallery */}
-      <div className="aspect-square w-full overflow-hidden rounded-3xl bg-neutral-50 border border-neutral-200">
+      <div className="relative aspect-square w-full overflow-hidden rounded-3xl bg-neutral-50 border border-neutral-200">
         {product.images.length > 0 ? (
-          <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover object-center" />
+          <Image
+            src={product.images[0]}
+            alt={product.name}
+            fill
+            className="object-cover object-center"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-neutral-400">No Image</div>
         )}

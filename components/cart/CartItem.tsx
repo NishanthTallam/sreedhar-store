@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { Trash2 } from "lucide-react"
 import { QuantityStepper } from "@/components/ui/QuantityStepper"
 
@@ -27,12 +28,13 @@ export function CartItem({
 }: CartItemProps) {
   return (
     <div className="flex gap-4 py-4 border-b border-neutral-200 last:border-0">
-      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-50">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-50 relative">
+        <Image
           src={imageUrl}
           alt={name}
-          className="h-full w-full object-cover"
+          fill
+          className="object-cover"
+          sizes="80px"
         />
       </div>
       

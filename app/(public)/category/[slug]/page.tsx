@@ -6,6 +6,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const resolvedParams = await params;
   const category = await prisma.category.findUnique({
     where: { slug: resolvedParams.slug },
+    select: { id: true, name: true, slug: true },
   });
 
   if (!category) {
@@ -14,8 +15,25 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
   const products = await prisma.product.findMany({
     where: { categoryId: category.id, isActive: true },
-    include: { variants: true, brand: true },
-    orderBy: { createdAt: "desc" }
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      images: true,
+      avgRating: true,
+      variants: {
+        select: {
+          id: true,
+          price: true,
+          stock: true,
+          lowStockAt: true,
+        },
+      },
+      brand: {
+        select: { name: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
   });
 
   return (
@@ -27,19 +45,28 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
       {products.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {products.map((product) => (
-            <ProductCard 
-              key={product.id} 
-              id={product.id} 
-              name={product.name} 
-              slug={product.slug} 
-              brandName={product.brand?.name} 
-              imageUrl={product.images[0] || ""} 
-              startingPrice={Number(product.variants?.[0]?.price) || 0} 
-              stockStatus={product.variants?.[0]?.stock > 0 ? "in-stock" : "out-of-stock"} 
-              variantId={product.variants?.[0]?.id}
-            />
-          ))}
+          {products.map((product) => {
+            const lowestPrice = product.variants.length > 0
+              ? Math.min(...product.variants.map((v) => Number(v.price)))
+              : 0;
+            const hasStock = product.variants.some((v) => v.stock > 0);
+            const isLowStock = product.variants.some((v) => v.stock > 0 && v.stock <= v.lowStockAt);
+
+            return (
+              <ProductCard 
+                key={product.id} 
+                id={product.id} 
+                name={product.name} 
+                slug={product.slug} 
+                brandName={product.brand?.name} 
+                imageUrl={product.images[0] || ""} 
+                startingPrice={lowestPrice} 
+                avgRating={product.avgRating ? Number(product.avgRating) : undefined}
+                stockStatus={!hasStock ? "out-of-stock" : isLowStock ? "low-stock" : "in-stock"} 
+                variantId={product.variants?.[0]?.id}
+              />
+            );
+          })}
         </div>
       ) : (
         <div className="flex min-h-[40vh] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50">

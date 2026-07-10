@@ -4,16 +4,27 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CategoryNav } from "@/components/layout/CategoryNav";
 import { prisma } from "@/lib/prisma";
+import { cached, CACHE_KEYS } from "@/lib/cache";
 
 export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const categories = await prisma.category.findMany({
-    take: 10,
-    orderBy: { products: { _count: "desc" } }
-  });
+  const categories = await cached(
+    CACHE_KEYS.ALL_CATEGORIES,
+    () =>
+      prisma.category.findMany({
+        take: 10,
+        orderBy: { products: { _count: "desc" } },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      }),
+    300 // 5 minutes
+  );
 
   return (
     <>

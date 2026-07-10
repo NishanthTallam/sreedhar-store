@@ -147,6 +147,9 @@ model Address {
   longitude   Float?
   isDefault   Boolean     @default(false)
   orders      Order[]
+
+  @@index([userId])
+  @@index([isDefault])
 }
 
 model Brand {
@@ -190,6 +193,9 @@ model Product {
 
   @@index([categoryId])
   @@index([brandId])
+  @@index([slug])
+  @@index([isActive])
+  @@index([createdAt])
 }
 
 model Variant {
@@ -208,6 +214,9 @@ model Variant {
   orderItems   OrderItem[]
   cartItems    CartItem[]
   stockHistory StockHistory[]
+
+  @@index([productId])
+  @@index([price])
 }
 
 model StockHistory {
@@ -218,6 +227,8 @@ model StockHistory {
   reason    String   // "order", "manual adjustment", "return restock", etc.
   changedBy String?  // admin userId, null if system-generated
   createdAt DateTime @default(now())
+
+  @@index([variantId])
 }
 
 model Cart {
@@ -238,6 +249,7 @@ model CartItem {
   quantity  Int     @default(1)
 
   @@unique([cartId, variantId])
+  @@index([variantId])
 }
 
 model Coupon {
@@ -254,6 +266,9 @@ model Coupon {
   carts         Cart[]
   orders        Order[]
   createdAt     DateTime   @default(now())
+
+  @@index([isActive])
+  @@index([expiresAt])
 }
 
 model Order {
@@ -287,6 +302,7 @@ model Order {
   @@index([userId])
   @@index([status])
   @@index([deliveryBoyId])
+  @@index([createdAt])
 }
 
 model OrderItem {
@@ -337,6 +353,8 @@ model Review {
   createdAt DateTime     @default(now())
 
   @@index([productId])
+  @@index([userId])
+  @@index([status])
 }
 
 model WishlistItem {
@@ -360,6 +378,8 @@ model Banner {
   startsAt  DateTime?
   endsAt    DateTime?
   createdAt DateTime   @default(now())
+
+  @@index([isActive])
 }
 
 model Notification {
@@ -373,6 +393,7 @@ model Notification {
   createdAt DateTime              @default(now())
 
   @@index([userId])
+  @@index([userId, isRead])
 }
 
 model NotificationPreference {
@@ -395,6 +416,7 @@ model AuditLog {
   createdAt  DateTime @default(now())
 
   @@index([entityType])
+  @@index([createdAt])
 }
 
 model LoginHistory {
@@ -405,6 +427,8 @@ model LoginHistory {
   ipAddress String?
   userAgent String?
   createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model StoreSetting {

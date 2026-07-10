@@ -1,28 +1,72 @@
 import { prisma } from "@/lib/prisma";
+import { cached, CACHE_KEYS } from "@/lib/cache";
 import Link from "next/link";
+import Image from "next/image";
 import { ProductCard } from "@/components/product/ProductCard";
 import { BannerCarousel } from "@/components/layout/BannerCarousel";
 
 export default async function HomePage() {
-  const categories = await prisma.category.findMany({
-    take: 8,
-    orderBy: { products: { _count: "desc" } }
-  });
-
-  const featuredProducts = await prisma.product.findMany({
-    where: { isActive: true },
-    include: {
-      variants: true,
-      brand: true,
-    },
-    take: 8,
-    orderBy: { createdAt: "desc" }
-  });
-
-  const banners = await prisma.banner.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: "desc" }
-  });
+  // Fetch all data in parallel with Redis caching
+  const [categories, featuredProducts, banners] = await Promise.all([
+    cached(
+      CACHE_KEYS.HOMEPAGE_CATEGORIES,
+      () =>
+        prisma.category.findMany({
+          take: 8,
+          orderBy: { products: { _count: "desc" } },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            imageUrl: true,
+          },
+        }),
+      120 // 2 minutes
+    ),
+    cached(
+      CACHE_KEYS.HOMEPAGE_PRODUCTS,
+      () =>
+        prisma.product.findMany({
+          where: { isActive: true },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            images: true,
+            avgRating: true,
+            variants: {
+              select: {
+                id: true,
+                price: true,
+                stock: true,
+                lowStockAt: true,
+              },
+            },
+            brand: {
+              select: { name: true },
+            },
+          },
+          take: 8,
+          orderBy: { createdAt: "desc" },
+        }),
+      120 // 2 minutes
+    ),
+    cached(
+      CACHE_KEYS.HOMEPAGE_BANNERS,
+      () =>
+        prisma.banner.findMany({
+          where: { isActive: true },
+          select: {
+            id: true,
+            imageUrl: true,
+            title: true,
+            linkUrl: true,
+          },
+          orderBy: { createdAt: "desc" },
+        }),
+      300 // 5 minutes
+    ),
+  ]);
 
   // Map to the format BannerCarousel expects
   const formattedBanners = banners.map(b => ({
@@ -50,8 +94,13 @@ export default async function HomePage() {
               <Link key={category.id} href={`/category/${category.slug}`} className="group flex flex-col items-center gap-3">
                 <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-full bg-brand-50 border border-brand-100 transition-transform group-hover:scale-105 shadow-sm">
                   {category.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={category.imageUrl} alt={category.name} className="h-full w-full object-cover" />
+                    <Image
+                      src={category.imageUrl}
+                      alt={category.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 12.5vw"
+                    />
                   ) : (
                     <span className="text-2xl">📦</span>
                   )}

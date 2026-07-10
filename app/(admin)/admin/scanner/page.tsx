@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { CameraScanner } from "@/components/admin/CameraScanner";
 import { Search, Package, AlertCircle } from "lucide-react";
 
@@ -97,9 +98,9 @@ export default function ScannerPage() {
                     </div>
                   ) : productData ? (
                     <div className="flex gap-4 items-start bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-                      <div className="h-24 w-24 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-gray-100">
+                      <div className="h-24 w-24 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-gray-100 relative">
                         {productData.product.images?.[0] ? (
-                          <img src={productData.product.images[0]} alt={productData.product.name} className="w-full h-full object-cover" />
+                          <Image src={productData.product.images[0]} alt={productData.product.name} fill className="object-cover" sizes="96px" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-300">
                             <Package className="w-10 h-10" />

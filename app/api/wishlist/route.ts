@@ -57,14 +57,30 @@ export async function GET(req: Request) {
     }
     const items = await prisma.wishlistItem.findMany({
       where: { userId: session.user.id },
-      include: { 
+      select: {
+        id: true,
+        productId: true,
+        addedAt: true,
         product: {
-          include: {
-            variants: true,
-            brand: true
-          }
-        } 
-      }
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            images: true,
+            avgRating: true,
+            brand: { select: { id: true, name: true } },
+            variants: {
+              select: {
+                id: true,
+                label: true,
+                price: true,
+                stock: true,
+                productId: true,
+              },
+            },
+          },
+        },
+      },
     });
     return NextResponse.json({ success: true, data: items });
   } catch (error) {

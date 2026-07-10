@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { ShoppingCart } from "lucide-react"
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
@@ -23,7 +24,7 @@ interface ProductCardProps {
   variantId?: string
 }
 
-export function ProductCard({
+function ProductCardInner({
   id,
   name,
   slug,
@@ -78,11 +79,12 @@ export function ProductCard({
 
       <Link href={`/products/${slug}`} className="flex-1">
         <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-md bg-neutral-100">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={imageUrl}
             alt={name}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            fill
+            className="object-cover transition-transform group-hover:scale-105"
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
             loading="lazy"
           />
         </div>
@@ -134,3 +136,5 @@ export function ProductCard({
     </div>
   )
 }
+
+export const ProductCard = React.memo(ProductCardInner);

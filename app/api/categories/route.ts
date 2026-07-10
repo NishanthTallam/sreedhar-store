@@ -13,7 +13,14 @@ export async function GET() {
       },
       orderBy: { name: "asc" },
     });
-    return NextResponse.json({ success: true, data: categories });
+    return NextResponse.json(
+      { success: true, data: categories },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=120, stale-while-revalidate=300",
+        },
+      }
+    );
   } catch (error) {
     console.error("[CATEGORIES_GET]", error);
     return NextResponse.json({ success: false, error: "Failed to fetch categories" }, { status: 500 });

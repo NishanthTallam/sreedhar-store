@@ -2,6 +2,7 @@
 
 import { Heart, Search, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -77,7 +78,7 @@ export function WishlistClientList({ initialItems }: { initialItems: any[] }) {
               <div key={item.id} className="group relative flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-card hover:shadow-elevated transition-shadow">
                 <div className="relative aspect-square bg-neutral-100 flex items-center justify-center p-4">
                   {product.images?.[0] ? (
-                    <img src={product.images[0]} alt={product.name} className="object-cover h-full w-full" />
+                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw" />
                   ) : (
                     <div className="text-4xl text-neutral-400">📦</div>
                   )}

@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { VariantSelector } from "@/components/product/VariantSelector";
 import Link from "next/link";
 
 // Using a Client Component wrapper to handle the VariantSelector state 
@@ -11,10 +10,33 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
     where: { slug: resolvedParams.slug },
-    include: {
-      variants: true,
-      brand: true,
-      category: true,
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+      images: true,
+      isActive: true,
+      isReturnable: true,
+      avgRating: true,
+      variants: {
+        select: {
+          id: true,
+          label: true,
+          unit: true,
+          price: true,
+          mrpPrice: true,
+          discount: true,
+          stock: true,
+          productId: true,
+        },
+      },
+      brand: {
+        select: { id: true, name: true, slug: true },
+      },
+      category: {
+        select: { id: true, name: true, slug: true },
+      },
     },
   });
 

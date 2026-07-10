@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 interface Banner {
@@ -47,26 +48,34 @@ export function BannerCarousel({ banners, className }: BannerCarouselProps) {
         className="flex transition-transform duration-500 ease-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {banners.map((banner) => (
+        {banners.map((banner, index) => (
           <div key={banner.id} className="w-full shrink-0">
             {banner.linkUrl ? (
               <a href={banner.linkUrl} className="block w-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={banner.imageUrl}
-                  alt={banner.title}
-                  className="aspect-[4/3] w-full object-cover md:aspect-[16/5]"
-                  loading="lazy"
-                />
+                <div className="relative aspect-[4/3] w-full md:aspect-[16/5]">
+                  <Image
+                    src={banner.imageUrl}
+                    alt={banner.title}
+                    fill
+                    className="object-cover"
+                    sizes="100vw"
+                    priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                  />
+                </div>
               </a>
             ) : (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={banner.imageUrl}
-                alt={banner.title}
-                className="aspect-[4/3] w-full object-cover md:aspect-[16/5]"
-                loading="lazy"
-              />
+              <div className="relative aspect-[4/3] w-full md:aspect-[16/5]">
+                <Image
+                  src={banner.imageUrl}
+                  alt={banner.title}
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
+                  priority={index === 0}
+                  loading={index === 0 ? "eager" : "lazy"}
+                />
+              </div>
             )}
           </div>
         ))}

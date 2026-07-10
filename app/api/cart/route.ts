@@ -12,16 +12,44 @@ export async function GET(req: Request) {
 
     const cart = await prisma.cart.findUnique({
       where: { userId: session.user.id },
-      include: {
-        items: {
-          include: {
-            variant: {
-              include: { product: true }
-            }
-          }
+      select: {
+        id: true,
+        couponId: true,
+        coupon: {
+          select: {
+            id: true,
+            code: true,
+            type: true,
+            value: true,
+            maxDiscount: true,
+          },
         },
-        coupon: true,
-      }
+        items: {
+          select: {
+            id: true,
+            variantId: true,
+            quantity: true,
+            variant: {
+              select: {
+                id: true,
+                label: true,
+                price: true,
+                mrpPrice: true,
+                stock: true,
+                productId: true,
+                product: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    images: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     return NextResponse.json({ success: true, data: cart });

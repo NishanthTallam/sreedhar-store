@@ -7,15 +7,31 @@ export default async function WishlistPage() {
 
   const wishlistItems = await prisma.wishlistItem.findMany({
     where: { userId: session.user.id },
-    include: {
+    select: {
+      id: true,
+      productId: true,
+      addedAt: true,
       product: {
-        include: {
-          variants: true,
-          brand: true
-        }
-      }
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          images: true,
+          avgRating: true,
+          brand: { select: { id: true, name: true } },
+          variants: {
+            select: {
+              id: true,
+              label: true,
+              price: true,
+              stock: true,
+              productId: true,
+            },
+          },
+        },
+      },
     },
-    orderBy: { addedAt: 'desc' }
+    orderBy: { addedAt: "desc" },
   });
 
   const serializedItems = JSON.parse(JSON.stringify(wishlistItems));
