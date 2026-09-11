@@ -30,6 +30,12 @@ export function Header() {
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const searchRef = React.useRef<HTMLFormElement>(null);
 
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   React.useEffect(() => {
     // Attempt to fetch location on mount
     if (typeof navigator !== "undefined" && "geolocation" in navigator) {
@@ -194,7 +200,7 @@ export function Header() {
             </Button>
           </div>
           
-          {session && (
+          {isMounted && session && (
             <Link href="/account/wishlist" className="hidden md:flex">
               <Button variant="ghost" size="sm" className="px-2 relative">
                 <Heart className="h-5 w-5" />
@@ -208,7 +214,7 @@ export function Header() {
             </Link>
           )}
           
-          {session && (
+          {isMounted && session && (
             <Link href="/account/notifications" className="hidden sm:flex">
               <Button variant="ghost" size="sm" className="px-2 relative">
                 <Bell className="h-5 w-5" />
@@ -225,7 +231,7 @@ export function Header() {
           <Link href="/cart">
             <Button variant="ghost" size="sm" className="px-2 relative text-neutral-900">
               <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
+              {isMounted && cartCount > 0 && (
                 <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]" statusColor="success">
                   {cartCount}
                 </Badge>
@@ -235,7 +241,9 @@ export function Header() {
           </Link>
 
           <div className="hidden md:flex items-center">
-            {session ? (
+            {!isMounted ? (
+              <div className="w-8 h-8 rounded-full bg-neutral-100 animate-pulse" />
+            ) : session ? (
               <DropdownMenu
                 trigger={
                   <Button variant="ghost" size="sm" className="gap-2">

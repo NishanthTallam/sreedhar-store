@@ -2,19 +2,54 @@
 
 import { useState } from "react";
 import { PhoneIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
+import { useSession } from "@/lib/auth-client";
 
 export default function CustomerHelpPage() {
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  
+  const [topic, setTopic] = useState("");
+  const [orderId, setOrderId] = useState("");
+  const [message, setMessage] = useState("");
+  const [phone, setPhone] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate sending support request
-    setTimeout(() => {
-      setLoading(false);
+    
+    try {
+      const subjectText = `[${topic}] ${orderId ? `Order: ${orderId}` : "Support Request"}`;
+      
+      const payload = {
+        name: session?.user?.name || "Customer",
+        email: session?.user?.email || "customer@example.com",
+        phone: phone || "0000000000",
+        subject: subjectText,
+        message: message,
+      };
+
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit request");
+      }
+
       setSuccess(true);
-    }, 1000);
+      setTopic("");
+      setOrderId("");
+      setMessage("");
+      setPhone("");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send support request. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,7 +78,12 @@ export default function CustomerHelpPage() {
               
               <div className="space-y-1">
                 <label className="text-sm font-medium text-neutral-700">Topic</label>
-                <select required className="w-full rounded-md border border-neutral-300 p-2 text-sm">
+                <select 
+                  required 
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  className="w-full rounded-md border border-neutral-300 p-2 text-sm"
+                >
                   <option value="">Select a topic...</option>
                   <option value="order">Where is my order?</option>
                   <option value="return">Return / Refund Issue</option>
@@ -54,12 +94,36 @@ export default function CustomerHelpPage() {
 
               <div className="space-y-1">
                 <label className="text-sm font-medium text-neutral-700">Order ID (Optional)</label>
-                <input type="text" placeholder="e.g. ORD-12345" className="w-full rounded-md border border-neutral-300 p-2 text-sm" />
+                <input 
+                  type="text" 
+                  value={orderId}
+                  onChange={(e) => setOrderId(e.target.value)}
+                  placeholder="e.g. ORD-12345" 
+                  className="w-full rounded-md border border-neutral-300 p-2 text-sm" 
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-neutral-700">Phone Number (Optional)</label>
+                <input 
+                  type="tel" 
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="e.g. +91 9876543210" 
+                  className="w-full rounded-md border border-neutral-300 p-2 text-sm" 
+                />
               </div>
 
               <div className="space-y-1">
                 <label className="text-sm font-medium text-neutral-700">Message</label>
-                <textarea required rows={5} placeholder="Describe your issue..." className="w-full rounded-md border border-neutral-300 p-2 text-sm resize-none" />
+                <textarea 
+                  required 
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={5} 
+                  placeholder="Describe your issue..." 
+                  className="w-full rounded-md border border-neutral-300 p-2 text-sm resize-none" 
+                />
               </div>
 
               <div className="pt-2">

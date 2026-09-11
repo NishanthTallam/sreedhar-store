@@ -38,6 +38,7 @@ export default async function HomePage() {
               select: {
                 id: true,
                 price: true,
+                mrpPrice: true,
                 stock: true,
                 lowStockAt: true,
               },
@@ -121,9 +122,14 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
             {featuredProducts.map((product) => {
-              const lowestPrice = product.variants.length > 0 
-                ? Math.min(...product.variants.map((v) => Number(v.price))) 
-                : 0;
+              // Find the variant with the lowest selling price
+              const cheapestVariant = product.variants.length > 0
+                ? product.variants.reduce((min, v) =>
+                    Number(v.price) < Number(min.price) ? v : min
+                  , product.variants[0])
+                : null;
+              const lowestPrice = cheapestVariant ? Number(cheapestVariant.price) : 0;
+              const mrp = cheapestVariant?.mrpPrice ? Number(cheapestVariant.mrpPrice) : undefined;
               const hasStock = product.variants.some((v) => v.stock > 0);
               const isLowStock = product.variants.some((v) => v.stock > 0 && v.stock <= v.lowStockAt);
               
@@ -136,6 +142,7 @@ export default async function HomePage() {
                   brandName={product.brand?.name}
                   imageUrl={product.images[0] || ""}
                   startingPrice={lowestPrice}
+                  mrp={mrp}
                   avgRating={product.avgRating ? Number(product.avgRating) : undefined}
                   stockStatus={!hasStock ? "out-of-stock" : isLowStock ? "low-stock" : "in-stock"}
                   variantId={product.variants?.[0]?.id}
