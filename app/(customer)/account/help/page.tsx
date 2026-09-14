@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { PhoneIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
+import { PhoneIcon, EnvelopeIcon, MapPinIcon } from "@heroicons/react/24/outline";
 import { useSession } from "@/lib/auth-client";
 
 export default function CustomerHelpPage() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  
+  const [submitError, setSubmitError] = useState("");
+
   const [topic, setTopic] = useState("");
   const [orderId, setOrderId] = useState("");
   const [message, setMessage] = useState("");
@@ -17,7 +18,8 @@ export default function CustomerHelpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+    setSubmitError("");
+
     try {
       const subjectText = `[${topic}] ${orderId ? `Order: ${orderId}` : "Support Request"}`;
       
@@ -36,7 +38,12 @@ export default function CustomerHelpPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to submit request");
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(
+          errJson?.error ||
+            errJson?.message ||
+            "Failed to submit request. Please try again."
+        );
       }
 
       setSuccess(true);
@@ -44,9 +51,11 @@ export default function CustomerHelpPage() {
       setOrderId("");
       setMessage("");
       setPhone("");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Failed to send support request. Please try again.");
+      setSubmitError(
+        error?.message || "Failed to send support request. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -75,6 +84,12 @@ export default function CustomerHelpPage() {
           ) : (
             <form onSubmit={handleSubmit} className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-4">
               <h2 className="text-lg font-semibold text-neutral-900">Submit a Request</h2>
+
+              {submitError && (
+                <div className="rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+                  {submitError}
+                </div>
+              )}
               
               <div className="space-y-1">
                 <label className="text-sm font-medium text-neutral-700">Topic</label>
@@ -139,19 +154,43 @@ export default function CustomerHelpPage() {
           <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-4">
             <h3 className="font-semibold text-neutral-900">Direct Contact</h3>
             <div className="flex items-start gap-3 text-sm">
-              <PhoneIcon className="w-5 h-5 text-brand-600" />
+              <PhoneIcon className="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-neutral-900">+1 (555) 123-4567</p>
-                <p className="text-neutral-500">Mon-Sat, 9AM to 6PM</p>
+                <p className="font-medium text-neutral-900">+91 7989102722</p>
+                <p className="text-neutral-500">Mon–Sat, 9 AM to 6 PM</p>
               </div>
             </div>
             <div className="flex items-start gap-3 text-sm">
-              <EnvelopeIcon className="w-5 h-5 text-brand-600" />
+              <EnvelopeIcon className="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-neutral-900">support@generalstore.com</p>
-                <p className="text-neutral-500">24/7 Email Support</p>
+                <p className="font-medium text-neutral-900 break-all">tallamnishanth@gmail.com</p>
+                <p className="text-neutral-500">We reply within 24 hours</p>
               </div>
             </div>
+          </div>
+
+          <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm space-y-3">
+            <h3 className="font-semibold text-neutral-900">Store Location</h3>
+            <div className="flex items-start gap-3 text-sm">
+              <MapPinIcon className="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-neutral-900">Sreedhar General Store</p>
+                <p className="text-neutral-500 leading-relaxed">
+                  Main Road, Bukkapatnam – 515144<br />
+                  Sri Sathya Sai Dist,<br />
+                  Andhra Pradesh
+                </p>
+              </div>
+            </div>
+            <a
+              href="https://maps.google.com/?q=Bukkapatnam,515144,Sri+Sathya+Sai+Dist,Andhra+Pradesh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 hover:text-brand-700 transition-colors"
+            >
+              <MapPinIcon className="w-3.5 h-3.5" />
+              View on Google Maps
+            </a>
           </div>
         </div>
       </div>

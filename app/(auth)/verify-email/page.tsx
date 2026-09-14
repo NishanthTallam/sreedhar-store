@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import { authClient } from "@/lib/auth-client";
 
 function VerifyEmailContent() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -19,21 +20,42 @@ function VerifyEmailContent() {
       return;
     }
 
-    const error = searchParams.get("error");
-    if (error) {
-      setStatus("error");
-      setMessage("Email verification failed. The link may be expired or already used.");
-      return;
-    }
+    // Actually call the Better Auth API to verify the token server-side.
+    // This is critical for iOS mail clients (Safari/in-app browser) which
+    // open email links in a restricted webview — we must confirm verification
+    // via API, not just assume success from the presence of a token.
+    const verify = async () => {
+      try {
+        const { error } = await authClient.verifyEmail({
+          query: { token },
+        });
 
-    setStatus("success");
-    setMessage("Your email has been verified successfully! You can now sign in.");
+        if (error) {
+          setStatus("error");
+          setMessage(
+            error.message ||
+              "Email verification failed. The link may be expired or already used."
+          );
+        } else {
+          setStatus("success");
+          setMessage("Your email has been verified successfully! You can now sign in.");
 
-    const timer = setTimeout(() => {
-      router.push("/");
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [token, searchParams, router]);
+          const timer = setTimeout(() => {
+            router.push("/login");
+          }, 3000);
+          return () => clearTimeout(timer);
+        }
+      } catch (err: any) {
+        setStatus("error");
+        setMessage(
+          err?.message ||
+            "Something went wrong during verification. Please try again."
+        );
+      }
+    };
+
+    verify();
+  }, [token, router]);
 
   return (
     <div className="w-full text-center py-6">
@@ -65,12 +87,12 @@ function VerifyEmailContent() {
           <p className="text-sm text-neutral-500 leading-relaxed mb-6">
             {message}
           </p>
-          <div className="text-xs text-neutral-400 mb-6">Redirecting to home in a few seconds...</div>
+          <div className="text-xs text-neutral-400 mb-6">Redirecting to login in a few seconds...</div>
           <Link
-            href="/"
+            href="/login"
             className="flex w-full justify-center rounded-lg bg-brand-600 py-3 px-4 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition-all"
           >
-            Go to Home
+            Go to Login
           </Link>
         </>
       )}

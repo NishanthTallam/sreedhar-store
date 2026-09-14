@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/rbac";
 import { writeAuditLog } from "@/lib/audit";
-import { sendOrderStatusEmail } from "@/lib/mailer";
+import { sendOrderStatusEmail, sendOrderCancelled } from "@/lib/mailer";
 import { z } from "zod";
 
 const statusUpdateSchema = z.object({
@@ -133,13 +133,22 @@ export async function POST(
       metadata: { oldStatus: order.status, newStatus },
     });
 
-    // Fire & forget email (do not await to avoid blocking response)
-    sendOrderStatusEmail(
-      order.user.email,
-      order.orderNumber,
-      newStatus,
-      order.user.name
-    ).catch(console.error);
+    // Fire & forget email – send a dedicated cancellation email when cancelled,
+    // otherwise send the generic order-status update email.
+    if (newStatus === "CANCELLED") {
+      sendOrderCancelled(
+        order.user.email,
+        order.user.name ?? "Customer",
+        order.orderNumber
+      ).catch(console.error);
+    } else {
+      sendOrderStatusEmail(
+        order.user.email,
+        order.orderNumber,
+        newStatus,
+        order.user.name ?? "Customer"
+      ).catch(console.error);
+    }
 
     // Redirect based on role
     if (userRole === "CUSTOMER") {

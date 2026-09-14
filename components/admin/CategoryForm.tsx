@@ -17,6 +17,7 @@ export default function CategoryForm({ initialData, parentCategories = [], isEdi
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   const [formData, setFormData] = useState<CategoryInput>(initialData || {
     name: "",
@@ -76,9 +77,19 @@ export default function CategoryForm({ initialData, parentCategories = [], isEdi
     setError(null);
     setLoading(true);
 
-    const parsed = categorySchema.safeParse(formData);
+    // Coerce empty imageUrl string to null so Zod url() validator doesn't reject it
+    const dataToValidate = {
+      ...formData,
+      imageUrl: formData.imageUrl?.trim() || null,
+    };
+
+    const parsed = categorySchema.safeParse(dataToValidate);
     if (!parsed.success) {
-      setError("Validation error: " + JSON.stringify(parsed.error.flatten().fieldErrors));
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      const messages = Object.entries(fieldErrors)
+        .map(([field, errs]) => `${field}: ${(errs as string[]).join(", ")}`)
+        .join(" | ");
+      setError(messages || "Validation failed. Please check your inputs.");
       setLoading(false);
       return;
     }
@@ -109,8 +120,6 @@ export default function CategoryForm({ initialData, parentCategories = [], isEdi
 
   const handleDelete = async () => {
     if (!isEdit || !initialData?.id) return;
-    if (!confirm("Are you sure you want to delete this category?")) return;
-
     setLoading(true);
     try {
       const res = await fetch(`/api/categories/${initialData.id}`, { method: "DELETE" });
@@ -120,9 +129,11 @@ export default function CategoryForm({ initialData, parentCategories = [], isEdi
         router.refresh();
       } else {
         setError(json.error || "Failed to delete category");
+        setDeleteConfirm(false);
       }
     } catch (err: any) {
       setError(err.message || "An error occurred");
+      setDeleteConfirm(false);
     } finally {
       setLoading(false);
     }
@@ -220,15 +231,35 @@ export default function CategoryForm({ initialData, parentCategories = [], isEdi
 
       <div className="flex justify-between items-center pt-6 border-t border-neutral-100">
         <div>
-          {isEdit && (
+          {isEdit && !deleteConfirm && (
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={() => setDeleteConfirm(true)}
               disabled={loading}
               className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 disabled:opacity-50"
             >
               Delete Category
             </button>
+          )}
+          {isEdit && deleteConfirm && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-red-600 font-medium">Are you sure?</span>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={loading}
+                className="px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {loading ? "Deleting..." : "Yes, Delete"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeleteConfirm(false)}
+                className="px-3 py-1.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50"
+              >
+                Cancel
+              </button>
+            </div>
           )}
         </div>
         <div className="flex gap-3">

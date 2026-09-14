@@ -28,7 +28,13 @@ export async function addAddress(formData: FormData) {
   try {
     const session = await requireAuth();
 
-    const newAddress = await prisma.address.create({
+    // Check if this is the user's first address — if so, make it the default
+    const existingCount = await prisma.address.count({
+      where: { userId: session.user.id },
+    });
+    const isDefault = existingCount === 0;
+
+    await prisma.address.create({
       data: {
         userId: session.user.id,
         fullName: formData.get("fullName") as string,
@@ -40,6 +46,7 @@ export async function addAddress(formData: FormData) {
         state: formData.get("state") as string,
         pincode: formData.get("pincode") as string,
         type: (formData.get("type") as "HOME" | "WORK" | "OTHER") || "HOME",
+        isDefault,
       }
     });
 
@@ -47,7 +54,7 @@ export async function addAddress(formData: FormData) {
     return { success: true };
   } catch (error: any) {
     console.error("Failed to add address", error);
-    return { success: false, error: "Failed to add address" };
+    return { success: false, error: error?.message || "Failed to add address" };
   }
 }
 

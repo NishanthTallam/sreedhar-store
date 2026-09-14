@@ -68,7 +68,19 @@ export default function HelpPage() {
               <MapPinIcon className="w-6 h-6 text-brand-600 mt-1 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-neutral-900">Store Location</h4>
-                <p className="text-neutral-600 text-sm mt-1">123 Commerce St, Retail Block<br />Cityville, ST 12345</p>
+                <p className="text-neutral-600 text-sm mt-1">
+                  Sreedhar General Store<br />
+                  Main Road, Bukkapatnam – 515144<br />
+                  Sri Sathya Sai Dist, Andhra Pradesh
+                </p>
+                <a
+                  href="https://maps.google.com/?q=Bukkapatnam,515144,Sri+Sathya+Sai+Dist,Andhra+Pradesh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700 mt-1 transition-colors"
+                >
+                  View on Google Maps →
+                </a>
               </div>
             </div>
           </div>

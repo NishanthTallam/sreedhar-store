@@ -58,8 +58,11 @@ export async function POST(req: Request) {
     // We should write audit log here ideally, but keeping it simple for now
     
     return NextResponse.json({ success: true, data: category }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[CATEGORIES_POST]", error);
-    return NextResponse.json({ success: false, error: "Unauthorized or server error" }, { status: 401 });
+    if (error?.message?.includes("Unauthorized") || error?.message?.includes("Forbidden")) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+    return NextResponse.json({ success: false, error: error?.message || "Failed to create category" }, { status: 500 });
   }
 }

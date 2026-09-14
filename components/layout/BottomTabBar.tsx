@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Home, Grid, Heart, ShoppingCart, User } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/Badge"
 
 export function BottomTabBar() {
   const pathname = usePathname()
@@ -14,7 +13,7 @@ export function BottomTabBar() {
     { name: "Home", href: "/", icon: Home },
     { name: "Categories", href: "/categories", icon: Grid },
     { name: "Wishlist", href: "/account/wishlist", icon: Heart },
-    { name: "Cart", href: "/cart", icon: ShoppingCart, badge: 2 },
+    { name: "Cart", href: "/cart", icon: ShoppingCart },
     { name: "Account", href: "/account", icon: User },
   ]
 
@@ -27,7 +26,11 @@ export function BottomTabBar() {
     <div className="fixed bottom-0 left-0 z-50 w-full border-t border-neutral-200 bg-white md:hidden">
       <div className="flex h-16 items-center justify-around px-2 pb-safe">
         {tabs.map((tab) => {
-          const isActive = pathname === tab.href || (tab.href !== "/" && pathname.startsWith(tab.href))
+          // Exact match for home and categories; prefix match for others
+          const isActive =
+            tab.href === "/" || tab.href === "/categories"
+              ? pathname === tab.href
+              : pathname.startsWith(tab.href)
           return (
             <Link
               key={tab.name}
@@ -39,11 +42,6 @@ export function BottomTabBar() {
             >
               <div className="relative">
                 <tab.icon className={cn("h-6 w-6", isActive && "fill-brand-50")} />
-                {tab.badge && (
-                  <Badge className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full p-0 px-1 text-[10px]" statusColor="success">
-                    {tab.badge}
-                  </Badge>
-                )}
               </div>
               <span>{tab.name}</span>
             </Link>

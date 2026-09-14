@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Package, Tag, CreditCard, User, Circle } from "lucide-react"
+import { Package, Tag, CreditCard, User, Circle, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const iconMap = {
@@ -22,31 +22,70 @@ interface Notification {
   createdAt: string
 }
 
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    category: "ORDERS",
-    title: "Order Delivered",
-    body: "Your order #ORD-00231 has been delivered. Enjoy!",
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 mins ago
-  },
-  {
-    id: "2",
-    category: "OFFERS",
-    title: "Save 50% Today",
-    body: "Use code SAVE50 at checkout for 50% off on your next order above ₹500.",
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-  }
-]
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return "just now"
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs}h ago`
+  const days = Math.floor(hrs / 24)
+  return `${days}d ago`
+}
 
-export function NotificationList({ initialNotifications }: { initialNotifications?: any[] }) {
-  const [notifications, setNotifications] = React.useState<any[]>(initialNotifications || mockNotifications)
+export function NotificationList({ initialNotifications }: { initialNotifications?: Notification[] }) {
+  const [notifications, setNotifications] = React.useState<Notification[]>(initialNotifications || [])
+  const [loading, setLoading] = React.useState(!initialNotifications)
+  const [error, setError] = React.useState<string | null>(null)
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev => 
+  // Fetch from API if no initial data was provided (client-side render, e.g. in a drawer)
+  React.useEffect(() => {
+    if (initialNotifications) return
+    const fetchNotifications = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await fetch("/api/notifications")
+        if (!res.ok) throw new Error("Failed to load")
+        const json = await res.json()
+        setNotifications(json.data || [])
+      } catch (err) {
+        setError("Could not load notifications.")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchNotifications()
+  }, [initialNotifications])
+
+  const markAsRead = async (id: string) => {
+    // Optimistic update
+    setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, isRead: true } : n)
+    )
+    try {
+      await fetch(`/api/notifications/${id}/read`, {
+        method: "PATCH",
+      })
+    } catch {
+      // silently fail – optimistic update stays
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-40 flex-col items-center justify-center gap-2 text-neutral-400">
+        <RefreshCw className="h-6 w-6 animate-spin" />
+        <p className="text-sm">Loading notifications…</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-40 flex-col items-center justify-center text-red-500">
+        <p className="text-sm">{error}</p>
+      </div>
     )
   }
 
@@ -54,7 +93,7 @@ export function NotificationList({ initialNotifications }: { initialNotification
     return (
       <div className="flex h-40 flex-col items-center justify-center text-neutral-500">
         <BellIcon className="mb-2 h-8 w-8 opacity-20" />
-        <p className="text-sm">No new notifications</p>
+        <p className="text-sm">No notifications yet</p>
       </div>
     )
   }
@@ -63,7 +102,7 @@ export function NotificationList({ initialNotifications }: { initialNotification
     <div className="flex flex-col gap-1">
       {notifications.map((notification) => {
         const Icon = iconMap[notification.category as keyof typeof iconMap] || BellIcon
-        
+
         return (
           <button
             key={notification.id}
@@ -87,7 +126,7 @@ export function NotificationList({ initialNotifications }: { initialNotification
                 {notification.body}
               </p>
               <span className="mt-1 block text-xs text-neutral-400">
-                {new Date(notification.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {timeAgo(notification.createdAt)}
               </span>
             </div>
             {!notification.isRead && (

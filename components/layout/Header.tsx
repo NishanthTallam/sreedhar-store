@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Search, MapPin, Heart, Bell, ShoppingCart, User, Menu, LogOut, Package } from "lucide-react"
+import { Search, MapPin, Heart, Bell, User, Menu, LogOut, Package } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Badge } from "@/components/ui/Badge"
@@ -17,8 +17,7 @@ import { useStore } from "@/store/useStore"
 
 export function Header() {
   const { data: session } = useSession();
-  const { cartData, wishlistData } = useStore();
-  const cartCount = cartData?.items?.length || 0;
+  const { wishlistData } = useStore();
   const wishlistCount = wishlistData?.length || 0;
   const { unreadCount } = useNotifications();
   const router = useRouter();
@@ -213,9 +212,9 @@ export function Header() {
               </Button>
             </Link>
           )}
-          
-          {isMounted && session && (
-            <Link href="/account/notifications" className="hidden sm:flex">
+
+          {isMounted && session ? (
+            <Link href="/account/notifications">
               <Button variant="ghost" size="sm" className="px-2 relative">
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
@@ -226,19 +225,12 @@ export function Header() {
                 <span className="sr-only">Notifications</span>
               </Button>
             </Link>
-          )}
-
-          <Link href="/cart">
-            <Button variant="ghost" size="sm" className="px-2 relative text-neutral-900">
-              <ShoppingCart className="h-5 w-5" />
-              {isMounted && cartCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]" statusColor="success">
-                  {cartCount}
-                </Badge>
-              )}
-              <span className="sr-only">Cart</span>
+          ) : (
+            <Button variant="ghost" size="sm" className="px-2 relative" disabled>
+              <Bell className="h-5 w-5" />
+              <span className="sr-only">Notifications</span>
             </Button>
-          </Link>
+          )}
 
           <div className="hidden md:flex items-center">
             {!isMounted ? (

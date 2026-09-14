@@ -56,20 +56,26 @@ export function AddressClientList({ addresses }: { addresses: any[] }) {
     setLoadingId(null);
   };
 
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
+
   const handleAddSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitting(true);
+    setFormError("");
     const formData = new FormData(e.currentTarget);
     
     if (editingAddress) {
       formData.append("id", editingAddress.id);
       const res = await updateAddress(formData);
       if (res.success) resetForm();
-      else alert(res.error);
+      else setFormError(res.error || "Failed to update address");
     } else {
       const res = await addAddress(formData);
       if (res.success) resetForm();
-      else alert(res.error);
+      else setFormError(res.error || "Failed to add address");
     }
+    setSubmitting(false);
   };
 
   return (
@@ -112,8 +118,13 @@ export function AddressClientList({ addresses }: { addresses: any[] }) {
                 <option value="OTHER">Other</option>
               </select>
             </div>
+            {formError && (
+              <p className="text-sm text-red-600 bg-red-50 rounded-md px-3 py-2 border border-red-200">{formError}</p>
+            )}
             <div className="flex justify-end pt-2">
-              <Button type="submit">{editingAddress ? "Update Address" : "Save Address"}</Button>
+              <Button type="submit" disabled={submitting}>
+                {submitting ? "Saving..." : editingAddress ? "Update Address" : "Save Address"}
+              </Button>
             </div>
           </form>
         </div>

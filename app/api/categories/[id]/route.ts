@@ -59,9 +59,12 @@ export async function PUT(
     });
 
     return NextResponse.json({ success: true, data: category });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[CATEGORY_PUT]", error);
-    return NextResponse.json({ success: false, error: "Unauthorized or server error" }, { status: 401 });
+    if (error?.message?.includes("Unauthorized") || error?.message?.includes("Forbidden")) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+    return NextResponse.json({ success: false, error: error?.message || "Failed to update category" }, { status: 500 });
   }
 }
 
@@ -94,8 +97,11 @@ export async function DELETE(
     await prisma.category.delete({ where: { id } });
 
     return NextResponse.json({ success: true, message: "Category deleted" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[CATEGORY_DELETE]", error);
-    return NextResponse.json({ success: false, error: "Unauthorized or server error" }, { status: 401 });
+    if (error?.message?.includes("Unauthorized") || error?.message?.includes("Forbidden")) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+    return NextResponse.json({ success: false, error: error?.message || "Failed to delete category" }, { status: 500 });
   }
 }

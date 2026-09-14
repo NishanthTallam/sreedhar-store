@@ -224,10 +224,16 @@ export async function sendOrderStatusEmail(to: string, orderNumber: string, stat
 export async function sendOrderCancelled(to: string, name: string, orderNumber: string) {
   const content = `
     <p>Hi ${name},</p>
-    <p>Your order <strong>#${orderNumber}</strong> has been cancelled.</p>
-    <p>If you have already paid, your refund will be processed shortly.</p>
+    <p>Your order <strong>#${orderNumber}</strong> has been successfully cancelled as requested.</p>
+    <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; border-radius: 4px; margin: 24px 0;">
+      <p style="margin: 0; color: #991b1b;"><strong>Order Number:</strong> #${orderNumber}</p>
+      <p style="margin: 8px 0 0; color: #991b1b;"><strong>Status:</strong> Cancelled</p>
+    </div>
+    <p>If you paid online, your refund will be processed within <strong>5–7 business days</strong> to your original payment method.</p>
+    <p>If you have any questions, feel free to reach out to our support team.</p>
   `;
-  return sendMail({ to, subject: `Order Cancelled - #${orderNumber}`, html: getBaseEmailTemplate("Order Cancelled", content) });
+  const cta = `<a href="https://sreedharstore.com/account/orders" class="btn">View My Orders</a>`;
+  return sendMail({ to, subject: `Order Cancelled - #${orderNumber}`, html: getBaseEmailTemplate("Order Cancelled", content, cta) });
 }
 
 export async function sendRefundInitiated(to: string, name: string, orderNumber: string, amount: string) {

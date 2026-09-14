@@ -167,10 +167,13 @@ export default function CheckoutPage() {
             <div className="space-y-4">
               {addresses.length === 0 ? (
                 <div className="rounded-xl border border-neutral-200 p-6 text-center">
-                  <p className="text-neutral-500 mb-4">No address found</p>
-                  <button className="inline-flex rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">
+                  <p className="text-neutral-500 mb-4">No saved address found. Please add an address to continue.</p>
+                  <a
+                    href="/account/address"
+                    className="inline-flex rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+                  >
                     + Add Address
-                  </button>
+                  </a>
                 </div>
               ) : (
                 addresses.map((addr) => (
