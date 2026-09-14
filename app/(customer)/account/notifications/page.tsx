@@ -6,10 +6,15 @@ import { MarkAllReadButton } from "./MarkAllReadButton";
 export default async function NotificationsPage() {
   const session = await requireAuth();
 
-  const notifications = await prisma.notification.findMany({
+  const rawNotifications = await prisma.notification.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
   });
+
+  const notifications = rawNotifications.map((n) => ({
+    ...n,
+    createdAt: n.createdAt.toISOString(),
+  }));
 
   return (
     <div className="space-y-6">
