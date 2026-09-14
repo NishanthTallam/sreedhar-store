@@ -1,6 +1,8 @@
 import { requireAuth } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 import { PersonalDetailsForm } from "./PersonalDetailsForm";
+import { LogoutButton } from "./LogoutButton";
+
 
 export default async function PersonalDetailsPage() {
   const session = await requireAuth();
@@ -33,6 +35,18 @@ export default async function PersonalDetailsPage() {
           email={user.email} 
           initialPhone={phone} 
         />
+      </div>
+
+      <div className="rounded-xl border border-red-100 bg-white p-6 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-base font-semibold text-neutral-900">Sign Out</h2>
+            <p className="mt-1 text-sm text-neutral-500">
+              Sign out of your account on this device.
+            </p>
+          </div>
+          <LogoutButton />
+        </div>
       </div>
     </div>
   );
