@@ -112,8 +112,11 @@ function getBaseEmailTemplate(title: string, content: string, ctaHtml?: string) 
                   <!-- Logo Icon -->
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
                     <tr>
-                      <td style="background-color: rgba(255,255,255,0.2); border-radius: 12px; padding: 10px 14px;">
-                        <span style="font-size: 22px; font-weight: 800; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-decoration: none; letter-spacing: -0.5px;">
+                      <td style="padding-right: 12px; vertical-align: middle;">
+                        <img src="https://sreedharstore.com/Sreedhar-store.svg" alt="Logo" width="40" height="40" style="display: block; width: 40px; height: 40px; border: 0; outline: none; text-decoration: none;" />
+                      </td>
+                      <td style="vertical-align: middle;">
+                        <span style="font-size: 24px; font-weight: 800; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-decoration: none; letter-spacing: -0.5px;">
                           ${STORE_NAME}
                         </span>
                       </td>

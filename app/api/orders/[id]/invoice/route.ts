@@ -69,13 +69,15 @@ export async function GET(
           .total-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 14px; color: #4b5563; }
           .total-row.grand-total { border-top: 2px solid #e5e7eb; margin-top: 10px; padding-top: 15px; font-weight: bold; font-size: 16px; color: #111; }
           .print-btn { display: block; margin: 40px auto; padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+          .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; pointer-events: none; z-index: -1; width: 70%; max-width: 600px; filter: grayscale(100%); }
           @media print {
             .print-btn { display: none; }
-            body { padding: 0; }
+            body { padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           }
         </style>
       </head>
       <body>
+        <img src="/Sreedhar-store.svg" class="watermark" alt="" />
         <div class="invoice-container">
           <div class="header">
             <div class="store-info">
@@ -162,8 +164,9 @@ export async function GET(
               <p style="color: #666; font-size: 14px;">Thank you for shopping with Sreedhar Store</p>
             </div>
             <div style="text-align: center;">
-              <div style="border-bottom: 1px solid #111; width: 200px; margin-bottom: 5px;"></div>
-              <p style="color: #111; font-size: 14px; font-weight: bold;">Authorized Signature</p>
+              <img src="/sign.png" alt="Signature" style="height: 60px; display: block; margin: 0 auto 5px;" />
+              <div style="border-top: 1px solid #111; width: 200px; padding-top: 5px;"></div>
+              <p style="color: #111; font-size: 14px; font-weight: bold; margin: 0;">Authorized Signature</p>
             </div>
           </div>
 

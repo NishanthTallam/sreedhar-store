@@ -12,7 +12,7 @@ interface AccountMobileHubProps {
 }
 
 const accountLinks = [
-  { label: "My Profile", href: "/account", icon: User, description: "View and edit your details", color: "bg-blue-50 text-blue-600" },
+  { label: "My Profile", href: "/account/profile", icon: User, description: "View and edit your details", color: "bg-blue-50 text-blue-600" },
   { label: "Addresses", href: "/account/address", icon: MapPin, description: "Manage delivery addresses", color: "bg-emerald-50 text-emerald-600" },
   { label: "Orders", href: "/account/orders", icon: Package, description: "Track your orders", color: "bg-violet-50 text-violet-600" },
   { label: "Wishlist", href: "/account/wishlist", icon: Heart, description: "Items you've saved", color: "bg-pink-50 text-pink-600" },

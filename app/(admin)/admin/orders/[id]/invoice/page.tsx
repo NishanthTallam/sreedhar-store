@@ -69,7 +69,14 @@ export default async function InvoicePage(props: { params: Promise<{ id: string 
         <PrintButton />
       </div>
 
-      <div className="p-8 border border-gray-200 rounded-lg shadow-sm print:border-none print:shadow-none print:p-0">
+      <div className="p-8 border border-gray-200 rounded-lg shadow-sm print:border-none print:shadow-none print:p-0 relative overflow-hidden bg-white">
+        {/* Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none z-0">
+          <img src="/Sreedhar-store.svg" alt="" className="w-3/4 max-w-lg grayscale" />
+        </div>
+
+        {/* Content Wrapper */}
+        <div className="relative z-10">
         
         {/* Header */}
         <div className="flex justify-between items-start border-b border-gray-200 pb-8 mb-8">
@@ -157,10 +164,22 @@ export default async function InvoicePage(props: { params: Promise<{ id: string 
           </div>
         </div>
 
+        {/* Signature */}
+        <div className="mt-16 flex justify-between items-end">
+          <div>
+            <p className="text-gray-600 text-sm">Thank you for shopping with Sreedhar Store</p>
+          </div>
+          <div className="text-center flex flex-col items-center">
+            <img src="/sign.png" alt="Signature" className="h-16 mb-1 object-contain" />
+            <div className="border-t border-gray-900 w-48 pt-1"></div>
+            <p className="text-gray-900 font-bold text-sm m-0">Authorized Signature</p>
+          </div>
+        </div>
+
         {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
-          <p>Thank you for shopping with Sreedhar Store.</p>
-          <p className="mt-1">If you have any questions about this invoice, please contact {supportEmail}</p>
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
+          <p>If you have any questions about this invoice, please contact {supportEmail}</p>
+        </div>
         </div>
       </div>
     </div>
