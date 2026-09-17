@@ -4,11 +4,11 @@ import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Search, MapPin, Heart, Bell, User, Menu, LogOut, Package } from "lucide-react"
+import { Search, MapPin, Heart, Bell, User, Menu, LogOut, Package, ShoppingCart, X, Home, Grid, MessageCircle, Key, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Badge } from "@/components/ui/Badge"
-import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/Drawer"
+import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "@/components/ui/Drawer"
 import { DropdownMenu, DropdownMenuItem } from "@/components/ui/DropdownMenu"
 import { Avatar } from "@/components/ui/Avatar"
 import { useSession, signOut } from "@/lib/auth-client"
@@ -17,8 +17,9 @@ import { useStore } from "@/store/useStore"
 
 export function Header() {
   const { data: session } = useSession();
-  const { wishlistData } = useStore();
+  const { wishlistData, cartData } = useStore();
   const wishlistCount = wishlistData?.length || 0;
+  const cartCount = cartData?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
   const { unreadCount } = useNotifications();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -27,7 +28,9 @@ export function Header() {
   const [searchQuery, setSearchQuery] = React.useState(searchParams?.get("q") || "");
   const [suggestions, setSuggestions] = React.useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [showMobileSearch, setShowMobileSearch] = React.useState(false);
   const searchRef = React.useRef<HTMLFormElement>(null);
+  const mobileSearchRef = React.useRef<HTMLFormElement>(null);
 
   const [isMounted, setIsMounted] = React.useState(false);
 
@@ -102,11 +105,21 @@ export function Header() {
     e.preventDefault();
     if (searchQuery.trim()) {
       setShowSuggestions(false);
+      setShowMobileSearch(false);
+      router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleMobileSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setShowMobileSearch(false);
       router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
   return (
+    <>
     <header className="sticky top-0 z-40 w-full border-b border-neutral-200 bg-white shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Mobile: Hamburger & Logo */}
@@ -119,26 +132,134 @@ export function Header() {
               </Button>
             </DrawerTrigger>
             <DrawerContent side="left">
-              <DrawerHeader>
-                <DrawerTitle>Menu</DrawerTitle>
+              <DrawerHeader className="border-b border-neutral-100 pb-4">
+                <DrawerTitle className="sr-only">Menu</DrawerTitle>
+                {isMounted && session ? (
+                  <div className="flex items-center gap-3">
+                    <Avatar
+                      name={session.user.name || "User"}
+                      src={session.user.image || undefined}
+                      size="md"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-neutral-900 truncate">{session.user.name}</p>
+                      <p className="text-xs text-neutral-500 truncate">{session.user.email}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50">
+                      <User className="h-5 w-5 text-brand-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-neutral-900">Welcome</p>
+                      <DrawerClose asChild>
+                        <Link prefetch={false} href="/login" className="text-xs font-medium text-brand-600 hover:text-brand-700">
+                          Sign in to your account →
+                        </Link>
+                      </DrawerClose>
+                    </div>
+                  </div>
+                )}
               </DrawerHeader>
-              <nav className="flex flex-col gap-4 py-4">
-                <Link href="/" className="text-sm font-medium">Home</Link>
-                <Link href="/products" className="text-sm font-medium">All Products</Link>
-                <Link href="/account/orders" className="text-sm font-medium">My Orders</Link>
-                <Link href="/account/wishlist" className="text-sm font-medium">Wishlist</Link>
-                <Link href="/help" className="text-sm font-medium">Help & Support</Link>
+
+              <nav className="flex-1 overflow-y-auto py-3">
+                {/* Main Navigation */}
+                <div className="px-2 mb-2">
+                  <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">Browse</p>
+                  {[
+                    { href: "/", icon: Home, label: "Home" },
+                    { href: "/products", icon: Package, label: "All Products" },
+                    { href: "/categories", icon: Grid, label: "Categories" },
+                  ].map((item) => (
+                    <DrawerClose key={item.href} asChild>
+                      <Link prefetch={false}
+                        href={item.href}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                      >
+                        <item.icon className="h-5 w-5 text-neutral-400" />
+                        <span className="flex-1">{item.label}</span>
+                        <ChevronRight className="h-4 w-4 text-neutral-300" />
+                      </Link>
+                    </DrawerClose>
+                  ))}
+                </div>
+
+                <div className="mx-4 my-2 border-t border-neutral-100" />
+
+                {/* Account Section */}
+                <div className="px-2 mb-2">
+                  <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">My Account</p>
+                  {[
+                    { href: "/account", icon: User, label: "My Profile", count: 0 },
+                    { href: "/account/orders", icon: Package, label: "My Orders", count: 0 },
+                    { href: "/account/wishlist", icon: Heart, label: "Wishlist", count: wishlistCount },
+                    { href: "/cart", icon: ShoppingCart, label: "Cart", count: cartCount },
+                    { href: "/account/notifications", icon: Bell, label: "Notifications", count: unreadCount },
+                  ].map((item) => (
+                    <DrawerClose key={item.href} asChild>
+                      <Link prefetch={false}
+                        href={item.href}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                      >
+                        <item.icon className="h-5 w-5 text-neutral-400" />
+                        <span className="flex-1">{item.label}</span>
+                        {item.count > 0 && (
+                          <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-brand-600 px-1.5 text-[10px] font-bold text-white">
+                            {item.count > 99 ? "99+" : item.count}
+                          </span>
+                        )}
+                        <ChevronRight className="h-4 w-4 text-neutral-300" />
+                      </Link>
+                    </DrawerClose>
+                  ))}
+                </div>
+
+                <div className="mx-4 my-2 border-t border-neutral-100" />
+
+                {/* Support */}
+                <div className="px-2">
+                  <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">Support</p>
+                  {[
+                    { href: "/account/help", icon: MessageCircle, label: "Help & Support" },
+                    { href: "/account/change-password", icon: Key, label: "Change Password" },
+                  ].map((item) => (
+                    <DrawerClose key={item.href} asChild>
+                      <Link prefetch={false}
+                        href={item.href}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                      >
+                        <item.icon className="h-5 w-5 text-neutral-400" />
+                        <span className="flex-1">{item.label}</span>
+                        <ChevronRight className="h-4 w-4 text-neutral-300" />
+                      </Link>
+                    </DrawerClose>
+                  ))}
+                </div>
               </nav>
+
+              {/* Sign Out — pinned to bottom */}
+              {isMounted && session && (
+                <div className="border-t border-neutral-100 p-4 mt-auto">
+                  <button
+                    onClick={async () => { await signOut(); window.location.href = "/login"; }}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 hover:border-red-300"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </DrawerContent>
           </Drawer>
-          <Link href="/" className="flex items-center gap-2">
+          <Link prefetch={false} href="/" className="flex items-center gap-2">
             <span className="text-xl font-bold text-brand-700">Sreedhar Store</span>
           </Link>
         </div>
 
         {/* Desktop: Logo & Location */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2">
+          <Link prefetch={false} href="/" className="flex items-center gap-2">
             <span className="text-2xl font-bold text-brand-700">Sreedhar Store</span>
           </Link>
           <button className="flex items-center gap-2 text-sm text-neutral-600 hover:text-brand-600 transition-colors">
@@ -170,7 +291,7 @@ export function Header() {
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-neutral-200 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
                 {suggestions.map((product) => (
-                  <Link 
+                  <Link prefetch={false} 
                     key={product.id} 
                     href={`/products/${product.slug}`}
                     className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-50 transition-colors border-b border-neutral-100 last:border-0"
@@ -192,15 +313,16 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-4">
+          {/* Mobile search button — opens inline overlay */}
           <div className="md:hidden">
-            <Button variant="ghost" size="sm" className="px-2">
-              <Search className="h-5 w-5" />
+            <Button variant="ghost" size="sm" className="px-2" onClick={() => setShowMobileSearch((v) => !v)}>
+              {showMobileSearch ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
               <span className="sr-only">Search</span>
             </Button>
           </div>
           
           {isMounted && session && (
-            <Link href="/account/wishlist" className="hidden md:flex">
+            <Link prefetch={false} href="/account/wishlist" className="hidden md:flex">
               <Button variant="ghost" size="sm" className="px-2 relative">
                 <Heart className="h-5 w-5" />
                 {wishlistCount > 0 && (
@@ -213,8 +335,23 @@ export function Header() {
             </Link>
           )}
 
+          {/* Cart icon with count — desktop only */}
+          {isMounted && session && (
+            <Link prefetch={false} href="/cart" className="hidden md:flex">
+              <Button variant="ghost" size="sm" className="px-2 relative">
+                <ShoppingCart className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-[10px]" statusColor="danger">
+                    {cartCount}
+                  </Badge>
+                )}
+                <span className="sr-only">Cart</span>
+              </Button>
+            </Link>
+          )}
+
           {isMounted && session ? (
-            <Link href="/account/notifications">
+            <Link prefetch={false} href="/account/notifications">
               <Button variant="ghost" size="sm" className="px-2 relative">
                 <Bell className="h-5 w-5" />
                 {unreadCount > 0 && (
@@ -266,7 +403,7 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenu>
             ) : (
-              <Link href="/login">
+              <Link prefetch={false} href="/login">
                 <Button variant="ghost" size="sm" className="font-medium text-brand-600">
                   Sign In
                 </Button>
@@ -276,5 +413,29 @@ export function Header() {
         </div>
       </div>
     </header>
+
+    {/* Mobile search overlay */}
+    {showMobileSearch && (
+      <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-white border-b border-neutral-200 shadow-lg px-4 py-3">
+        <form ref={mobileSearchRef} onSubmit={handleMobileSearch} className="relative flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+            <Input
+              type="search"
+              name="q"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search products..."
+              className="w-full pl-9 bg-neutral-50"
+            />
+          </div>
+          <Button type="submit" size="sm" className="bg-brand-600 text-white hover:bg-brand-700 px-4">
+            Search
+          </Button>
+        </form>
+      </div>
+    )}
+    </>
   )
 }

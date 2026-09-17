@@ -5,16 +5,26 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Home, Grid, Heart, ShoppingCart, User } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useStore } from "@/store/useStore"
 
 export function BottomTabBar() {
   const pathname = usePathname()
+  const { wishlistData, cartData } = useStore()
+  const [isMounted, setIsMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  const wishlistCount = isMounted ? wishlistData?.length || 0 : 0
+  const cartCount = isMounted ? cartData?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0 : 0
 
   const tabs = [
-    { name: "Home", href: "/", icon: Home },
-    { name: "Categories", href: "/categories", icon: Grid },
-    { name: "Wishlist", href: "/account/wishlist", icon: Heart },
-    { name: "Cart", href: "/cart", icon: ShoppingCart },
-    { name: "Account", href: "/account", icon: User },
+    { name: "Home", href: "/", icon: Home, count: 0 },
+    { name: "Categories", href: "/categories", icon: Grid, count: 0 },
+    { name: "Wishlist", href: "/account/wishlist", icon: Heart, count: wishlistCount },
+    { name: "Cart", href: "/cart", icon: ShoppingCart, count: cartCount },
+    { name: "Account", href: "/account", icon: User, count: 0 },
   ]
 
   // Hide on auth, admin, and specific checkout pages if needed, but for now just show universally on mobile
@@ -32,7 +42,7 @@ export function BottomTabBar() {
               ? pathname === tab.href
               : pathname.startsWith(tab.href)
           return (
-            <Link
+            <Link prefetch={false}
               key={tab.name}
               href={tab.href}
               className={cn(
@@ -42,6 +52,11 @@ export function BottomTabBar() {
             >
               <div className="relative">
                 <tab.icon className={cn("h-6 w-6", isActive && "fill-brand-50")} />
+                {tab.count > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-600 text-[10px] font-bold text-white leading-none">
+                    {tab.count > 99 ? "99+" : tab.count}
+                  </span>
+                )}
               </div>
               <span>{tab.name}</span>
             </Link>

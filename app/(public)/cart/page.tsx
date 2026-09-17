@@ -56,7 +56,7 @@ export default function CartPage() {
       <div className="mx-auto max-w-4xl px-4 py-16 text-center">
         <h1 className="text-3xl font-bold text-neutral-900 mb-4">Your Cart is Empty</h1>
         <p className="text-neutral-500 mb-8">Looks like you haven't added anything to your cart yet.</p>
-        <Link href="/products" className="inline-flex rounded-xl bg-brand-600 px-6 py-3 font-medium text-white hover:bg-brand-700 transition-colors">
+        <Link prefetch={false} href="/products" className="inline-flex rounded-xl bg-brand-600 px-6 py-3 font-medium text-white hover:bg-brand-700 transition-colors">
           Start Shopping
         </Link>
       </div>

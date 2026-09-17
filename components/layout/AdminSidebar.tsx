@@ -137,7 +137,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                   const Icon = item.icon;
                   return (
                     <li key={item.href}>
-                      <Link
+                      <Link prefetch={false}
                         href={item.href}
                         onClick={() => onClose()}
                         className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
@@ -159,7 +159,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
         {/* Footer */}
         <div className="shrink-0 border-t border-neutral-200 p-4">
-          <Link
+          <Link prefetch={false}
             href="/"
             onClick={() => onClose()}
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-neutral-500 hover:bg-neutral-50 hover:text-brand-600 transition-colors"

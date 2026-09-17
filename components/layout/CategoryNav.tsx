@@ -28,7 +28,7 @@ export function CategoryNav({ categories }: CategoryNavProps) {
               const href = `/category/${category.slug}`
               const isActive = pathname === href
               return (
-                <Link
+                <Link prefetch={false}
                   key={category.slug}
                   href={href}
                   className={cn(

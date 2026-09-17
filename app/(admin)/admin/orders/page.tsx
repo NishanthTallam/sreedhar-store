@@ -75,19 +75,19 @@ export default async function AdminOrdersPage({
         </h1>
         {isAdmin && (
           <div className="flex gap-2">
-            <Link
+            <Link prefetch={false}
               href="/admin/orders"
               className={`rounded px-3 py-1 text-sm font-medium ${!searchParams.status ? "bg-gray-200 text-gray-800" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
             >
               All
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/admin/orders?status=PLACED"
               className={`rounded px-3 py-1 text-sm font-medium ${searchParams.status === "PLACED" ? "bg-blue-200 text-blue-800" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
             >
               Placed
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/admin/orders?status=PACKED"
               className={`rounded px-3 py-1 text-sm font-medium ${searchParams.status === "PACKED" ? "bg-yellow-200 text-yellow-800" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
             >
@@ -97,7 +97,7 @@ export default async function AdminOrdersPage({
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -121,8 +121,8 @@ export default async function AdminOrdersPage({
                   Delivery Boy
                 </th>
               )}
-              <th scope="col" className="relative px-6 py-3">
-                <span className="sr-only">View</span>
+              <th scope="col" className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                Actions
               </th>
             </tr>
           </thead>
@@ -160,9 +160,25 @@ export default async function AdminOrdersPage({
                     </td>
                   )}
                   <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                    <Link href={`/admin/orders/${order.id}`} className="text-blue-600 hover:text-blue-900">
-                      View
-                    </Link>
+                    <div className="flex items-center justify-end gap-2">
+                      {isAdmin && order.status === "PLACED" && (
+                        <form action={`/api/orders/${order.id}/status`} method="POST" className="inline-block">
+                          <input type="hidden" name="status" value="CONFIRMED" />
+                          <button
+                            type="submit"
+                            className="inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-green-500 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
+                          >
+                            ✓ Confirm
+                          </button>
+                        </form>
+                      )}
+                      <Link prefetch={false}
+                        href={`/admin/orders/${order.id}`}
+                        className="inline-flex items-center rounded-md bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-200 hover:bg-blue-100 transition-colors"
+                      >
+                        View →
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))

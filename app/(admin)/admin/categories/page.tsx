@@ -11,7 +11,7 @@ export default async function AdminCategoriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-neutral-900">Categories</h1>
-        <Link
+        <Link prefetch={false}
           href="/admin/categories/new"
           className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
         >
@@ -19,7 +19,7 @@ export default async function AdminCategoriesPage() {
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+      <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
         <table className="w-full text-left text-sm text-neutral-600">
           <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
             <tr>
@@ -44,7 +44,7 @@ export default async function AdminCategoriesPage() {
                 <td className="px-6 py-4 font-medium text-neutral-900">{category.name}</td>
                 <td className="px-6 py-4">{category._count.products}</td>
                 <td className="px-6 py-4 text-right">
-                  <Link
+                  <Link prefetch={false}
                     href={`/admin/categories/${category.id}/edit`}
                     className="font-medium text-brand-600 hover:underline"
                   >

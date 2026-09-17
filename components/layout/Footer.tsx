@@ -33,26 +33,26 @@ export function Footer() {
           
           <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-neutral-900">Company</h4>
-            <Link href="/about-us" className="text-sm text-neutral-600 hover:text-brand-600">About Us</Link>
-            <Link href="/contact" className="text-sm text-neutral-600 hover:text-brand-600">Contact Us</Link>
-            <Link href="/policies/privacy" className="text-sm text-neutral-600 hover:text-brand-600">Privacy Policy</Link>
-            <Link href="/policies/terms" className="text-sm text-neutral-600 hover:text-brand-600">Terms & Conditions</Link>
-            <Link href="/policies/return" className="text-sm text-neutral-600 hover:text-brand-600">Return & Refund Policy</Link>
-            <Link href="/policies/shipping" className="text-sm text-neutral-600 hover:text-brand-600">Shipping Policy</Link>
-            <Link href="/policies/faq" className="text-sm text-neutral-600 hover:text-brand-600">FAQ</Link>
+            <Link prefetch={false} href="/about-us" className="text-sm text-neutral-600 hover:text-brand-600">About Us</Link>
+            <Link prefetch={false} href="/contact" className="text-sm text-neutral-600 hover:text-brand-600">Contact Us</Link>
+            <Link prefetch={false} href="/policies/privacy" className="text-sm text-neutral-600 hover:text-brand-600">Privacy Policy</Link>
+            <Link prefetch={false} href="/policies/terms" className="text-sm text-neutral-600 hover:text-brand-600">Terms & Conditions</Link>
+            <Link prefetch={false} href="/policies/return" className="text-sm text-neutral-600 hover:text-brand-600">Return & Refund Policy</Link>
+            <Link prefetch={false} href="/policies/shipping" className="text-sm text-neutral-600 hover:text-brand-600">Shipping Policy</Link>
+            <Link prefetch={false} href="/policies/faq" className="text-sm text-neutral-600 hover:text-brand-600">FAQ</Link>
           </div>
 
           <div className="flex flex-col gap-3">
             <h4 className="font-semibold text-neutral-900">Customer</h4>
-            <Link href="/account/orders" className="text-sm text-neutral-600 hover:text-brand-600">My Orders</Link>
-            <Link href="/account/wishlist" className="text-sm text-neutral-600 hover:text-brand-600">Wishlist</Link>
-            <Link href="/cart" className="text-sm text-neutral-600 hover:text-brand-600">Cart</Link>
-            <Link href="/account" className="text-sm text-neutral-600 hover:text-brand-600">My Account</Link>
+            <Link prefetch={false} href="/account/orders" className="text-sm text-neutral-600 hover:text-brand-600">My Orders</Link>
+            <Link prefetch={false} href="/account/wishlist" className="text-sm text-neutral-600 hover:text-brand-600">Wishlist</Link>
+            <Link prefetch={false} href="/cart" className="text-sm text-neutral-600 hover:text-brand-600">Cart</Link>
+            <Link prefetch={false} href="/account" className="text-sm text-neutral-600 hover:text-brand-600">My Account</Link>
 
             <h4 className="font-semibold text-neutral-900 mt-4">Support</h4>
-            <Link href="/help" className="text-sm text-neutral-600 hover:text-brand-600">Help Center</Link>
-            <Link href="/help" className="text-sm text-neutral-600 hover:text-brand-600">Track Order</Link>
-            <Link href="/contact" className="text-sm text-neutral-600 hover:text-brand-600">Raise Complaint</Link>
+            <Link prefetch={false} href="/help" className="text-sm text-neutral-600 hover:text-brand-600">Help Center</Link>
+            <Link prefetch={false} href="/help" className="text-sm text-neutral-600 hover:text-brand-600">Track Order</Link>
+            <Link prefetch={false} href="/contact" className="text-sm text-neutral-600 hover:text-brand-600">Raise Complaint</Link>
           </div>
 
           <div className="flex flex-col gap-4">

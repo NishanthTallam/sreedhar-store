@@ -92,7 +92,7 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
             {categories.map((category) => (
-              <Link key={category.id} href={`/category/${category.slug}`} className="group flex flex-col items-center gap-3">
+              <Link prefetch={false} key={category.id} href={`/category/${category.slug}`} className="group flex flex-col items-center gap-3">
                 <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-full bg-brand-50 border border-brand-100 transition-transform group-hover:scale-105 shadow-sm">
                   {category.imageUrl ? (
                     <Image
@@ -116,7 +116,7 @@ export default async function HomePage() {
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16 md:pb-0">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-neutral-900">Featured Products</h2>
-            <Link href="/products" className="text-sm font-medium text-brand-600 hover:underline">
+            <Link prefetch={false} href="/products" className="text-sm font-medium text-brand-600 hover:underline">
               View All
             </Link>
           </div>

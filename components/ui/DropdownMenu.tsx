@@ -81,7 +81,7 @@ export function DropdownMenuItem({
 
   if (href) {
     return (
-      <Link href={href} className={baseClasses} onClick={onClick}>
+      <Link prefetch={false} href={href} className={baseClasses} onClick={onClick}>
         {children}
       </Link>
     );

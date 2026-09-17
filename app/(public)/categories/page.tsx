@@ -42,7 +42,7 @@ export default async function CategoriesPage() {
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {categories.map((category) => (
-            <Link
+            <Link prefetch={false}
               key={category.id}
               href={`/category/${category.slug}`}
               className="group flex flex-col items-center rounded-2xl border border-neutral-200 bg-white p-4 text-center shadow-sm transition-all hover:border-brand-300 hover:shadow-md hover:-translate-y-0.5"

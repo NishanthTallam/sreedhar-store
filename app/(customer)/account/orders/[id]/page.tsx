@@ -32,7 +32,7 @@ export default async function OrderDetailsPage(props: { params: Promise<{ id: st
           variant: {
             include: {
               product: {
-                select: { name: true, images: true, brand: { select: { name: true } } },
+                select: { id: true, name: true, images: true, brand: { select: { name: true } } },
               },
             },
           },
@@ -58,7 +58,7 @@ export default async function OrderDetailsPage(props: { params: Promise<{ id: st
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
-        <Link href="/account/orders" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+        <Link prefetch={false} href="/account/orders" className="text-sm font-medium text-blue-600 hover:text-blue-500">
           &larr; Back to Orders
         </Link>
       </div>
@@ -75,13 +75,15 @@ export default async function OrderDetailsPage(props: { params: Promise<{ id: st
         
         {/* Actions (Cancel, Invoice) */}
         <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
-          <a
-            href={`/api/orders/${order.id}/invoice`}
-            target="_blank"
-            className="inline-flex justify-center items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-600 shadow-sm ring-1 ring-inset ring-brand-300 hover:bg-brand-50"
-          >
-            Download Invoice
-          </a>
+          {order.status === "DELIVERED" && (
+            <a
+              href={`/api/orders/${order.id}/invoice`}
+              target="_blank"
+              className="inline-flex justify-center items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-600 shadow-sm ring-1 ring-inset ring-brand-300 hover:bg-brand-50"
+            >
+              Download Invoice
+            </a>
+          )}
           {(order.status === "PLACED" || order.status === "CONFIRMED") && (
             <form action={`/api/orders/${order.id}/status`} method="POST">
               <input type="hidden" name="status" value="CANCELLED" />

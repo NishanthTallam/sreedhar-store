@@ -15,7 +15,7 @@ export function generateOrderConfirmationEmail(orderNumber: string, customerName
 
   return `
     <div style="font-family: sans-serif; max-w-xl; margin: 0 auto; color: #333;">
-      <h2 style="color: #059669;">Order Confirmed!</h2>
+      <h2 style="color: #059669;">Order Placed!</h2>
       <p>Hi ${customerName},</p>
       <p>Thank you for your order. We are currently processing it.</p>
       

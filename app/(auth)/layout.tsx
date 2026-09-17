@@ -15,7 +15,7 @@ export default function AuthLayout({
         <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-black/10 blur-3xl"></div>
         
         <div className="relative z-10">
-          <Link href="/" className="flex items-center gap-2 mb-12">
+          <Link prefetch={false} href="/" className="flex items-center gap-2 mb-12">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-brand-600 font-bold text-lg">
               S
             </div>
@@ -45,7 +45,7 @@ export default function AuthLayout({
       <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 relative">
         {/* Mobile Logo */}
         <div className="w-full max-w-md md:hidden flex justify-start mb-10 mt-4">
-          <Link href="/" className="flex items-center gap-2">
+          <Link prefetch={false} href="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white font-bold text-lg">
               S
             </div>

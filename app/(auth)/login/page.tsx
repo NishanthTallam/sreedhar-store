@@ -54,7 +54,7 @@ function LoginForm() {
         </h2>
         <p className="text-sm text-neutral-500">
           Don't have an account?{" "}
-          <Link href="/register" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
+          <Link prefetch={false} href="/register" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
             Sign up
           </Link>
         </p>
@@ -135,7 +135,7 @@ function LoginForm() {
           </div>
 
           <div className="text-sm">
-            <Link href="/forgot-password" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
+            <Link prefetch={false} href="/forgot-password" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
               Forgot password?
             </Link>
           </div>

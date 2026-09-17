@@ -79,7 +79,7 @@ export default async function AdminOrderDetailsPage(props: { params: Promise<{ i
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin/orders" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+        <Link prefetch={false} href="/admin/orders" className="text-sm font-medium text-blue-600 hover:text-blue-500">
           &larr; Back to Orders
         </Link>
       </div>

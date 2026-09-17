@@ -20,7 +20,7 @@ export default async function SecurityPage() {
         <p className="text-sm text-neutral-500 mt-1">Monitor recent login activity across the store.</p>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-x-auto">
         <div className="px-6 py-4 border-b border-neutral-200 bg-neutral-50 flex justify-between items-center">
           <h3 className="font-semibold text-neutral-900">Recent Logins</h3>
           <span className="text-xs text-neutral-500">Last 50 attempts</span>

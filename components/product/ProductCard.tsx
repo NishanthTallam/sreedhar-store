@@ -89,7 +89,7 @@ function ProductCardInner({
         )}
       </div>
 
-      <Link href={`/products/${slug}`} className="flex-1">
+      <Link prefetch={false} href={`/products/${slug}`} className="flex-1">
         {/* Product image with optional discount badge */}
         <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-md bg-neutral-100">
           <Image

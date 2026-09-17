@@ -24,64 +24,172 @@ const STORE_NAME = "Sreedhar Store";
 const STORE_ADDRESS = "Bukkapatnam, Puttaparthi, Andhra Pradesh";
 const STORE_EMAIL = "tallamnishanth@gmail.com";
 const STORE_PHONE = "+91 7989102722";
+const BRAND_COLOR = "#2563eb";
+const BRAND_DARK = "#1d4ed8";
 
 /**
- * Base Email Template for Sreedhar Store
+ * Email-safe CTA button using table-based layout.
+ * This pattern works reliably across all email clients including iOS Mail, Gmail, Outlook.
+ */
+function getCtaButton(href: string, text: string) {
+  return `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin: 0 auto;">
+      <tr>
+        <td align="center" style="border-radius: 8px; background: ${BRAND_COLOR};">
+          <a href="${href}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 16px 36px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 8px; text-align: center; mso-padding-alt: 0;">
+            ${text}
+          </a>
+        </td>
+      </tr>
+    </table>
+    <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 16px 0 0; line-height: 1.5;">
+      If the button doesn't work, copy and paste this link into your browser:<br/>
+      <a href="${href}" style="color: ${BRAND_COLOR}; word-break: break-all;">${href}</a>
+    </p>
+  `;
+}
+
+/**
+ * Premium Email Template for Sreedhar Store
+ * Uses table-based layout for maximum email client compatibility (including iOS Mail).
  */
 function getBaseEmailTemplate(title: string, content: string, ctaHtml?: string) {
   return `
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="x-apple-disable-message-reformatting">
+      <meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no">
+      <title>${title}</title>
+      <!--[if mso]>
+      <noscript>
+        <xml>
+          <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+          </o:OfficeDocumentSettings>
+        </xml>
+      </noscript>
+      <![endif]-->
       <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f4f5; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; color: #18181b; }
-        .wrapper { width: 100%; table-layout: fixed; background-color: #f4f4f5; padding: 40px 0; }
-        .main { background-color: #ffffff; max-width: 600px; margin: 0 auto; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        .header { background-color: #2563eb; padding: 32px 40px; text-align: center; }
-        .header-logo { color: #ffffff; font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -0.5px; text-decoration: none; }
-        .content { padding: 40px; }
-        .title { font-size: 24px; font-weight: 700; color: #18181b; margin-top: 0; margin-bottom: 24px; }
-        .body-text { font-size: 16px; line-height: 1.6; color: #3f3f46; margin: 0 0 24px 0; }
-        .body-text p { margin: 0 0 16px 0; }
-        .cta-container { margin: 32px 0; text-align: center; }
-        .btn { display: inline-block; background-color: #2563eb; color: #ffffff !important; font-weight: 600; font-size: 16px; text-decoration: none; padding: 14px 28px; border-radius: 6px; text-align: center; }
-        .footer { background-color: #f8fafc; padding: 32px 40px; text-align: center; border-top: 1px solid #e2e8f0; }
-        .footer-text { font-size: 14px; color: #64748b; line-height: 1.5; margin: 0 0 8px 0; }
-        .footer-link { color: #2563eb; text-decoration: none; }
-        .socials { margin-top: 16px; }
-        .socials a { color: #64748b; text-decoration: none; margin: 0 8px; font-size: 14px; }
+        /* Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f1f5f9; }
+        a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; line-height: inherit !important; }
+        /* iOS Blue Links */
+        a { color: ${BRAND_COLOR}; }
+        /* Responsive */
+        @media only screen and (max-width: 620px) {
+          .email-container { width: 100% !important; margin: auto !important; }
+          .fluid { max-width: 100% !important; height: auto !important; margin-left: auto !important; margin-right: auto !important; }
+          .stack-column { display: block !important; width: 100% !important; max-width: 100% !important; }
+          .content-padding { padding: 24px 20px !important; }
+          .header-padding { padding: 28px 20px !important; }
+        }
       </style>
     </head>
-    <body>
-      <div class="wrapper">
-        <div class="main">
-          <div class="header">
-            <a href="https://sreedharstore.com" class="header-logo">${STORE_NAME}</a>
-          </div>
-          <div class="content">
-            <h1 class="title">${title}</h1>
-            <div class="body-text">
-              ${content}
-            </div>
-            ${ctaHtml ? `<div class="cta-container">${ctaHtml}</div>` : ''}
-            <div class="body-text" style="margin-top: 32px;">
-              <p>Best regards,<br>The ${STORE_NAME} Team</p>
-            </div>
-          </div>
-          <div class="footer">
-            <p class="footer-text">
-              <strong>${STORE_NAME}</strong><br>
-              ${STORE_ADDRESS}<br>
-              <a href="mailto:${STORE_EMAIL}" class="footer-link">${STORE_EMAIL}</a> | ${STORE_PHONE}
-            </p>
-            <p class="footer-text" style="margin-top: 24px; font-size: 12px;">
-              &copy; ${new Date().getFullYear()} ${STORE_NAME}. All rights reserved.
-            </p>
-          </div>
-        </div>
+    <body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+      <!-- Visually Hidden Preview Text -->
+      <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
+        ${title} - ${STORE_NAME}
       </div>
+
+      <!-- Full Width Wrapper -->
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f1f5f9;">
+        <tr>
+          <td align="center" style="padding: 32px 16px;">
+
+            <!-- Email Container -->
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="email-container" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.06);">
+
+              <!-- Header -->
+              <tr>
+                <td class="header-padding" style="background: linear-gradient(135deg, ${BRAND_COLOR} 0%, ${BRAND_DARK} 100%); padding: 36px 40px; text-align: center;">
+                  <!-- Logo Icon -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center">
+                    <tr>
+                      <td style="background-color: rgba(255,255,255,0.2); border-radius: 12px; padding: 10px 14px;">
+                        <span style="font-size: 22px; font-weight: 800; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-decoration: none; letter-spacing: -0.5px;">
+                          ${STORE_NAME}
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Content -->
+              <tr>
+                <td class="content-padding" style="padding: 40px 40px 16px;">
+                  <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: #0f172a; line-height: 1.3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    ${title}
+                  </h1>
+                  <div style="font-size: 15px; line-height: 1.7; color: #475569; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    ${content}
+                  </div>
+                </td>
+              </tr>
+
+              <!-- CTA Button -->
+              ${ctaHtml ? `
+              <tr>
+                <td class="content-padding" style="padding: 8px 40px 32px;">
+                  ${ctaHtml}
+                </td>
+              </tr>
+              ` : ''}
+
+              <!-- Sign-off -->
+              <tr>
+                <td class="content-padding" style="padding: 8px 40px 32px;">
+                  <p style="font-size: 15px; line-height: 1.7; color: #475569; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    Best regards,<br/>
+                    <strong style="color: #0f172a;">The ${STORE_NAME} Team</strong>
+                  </p>
+                </td>
+              </tr>
+
+              <!-- Divider -->
+              <tr>
+                <td style="padding: 0 40px;">
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                    <tr>
+                      <td style="border-top: 1px solid #e2e8f0;"></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Footer -->
+              <tr>
+                <td class="content-padding" style="padding: 28px 40px 32px; text-align: center;">
+                  <p style="margin: 0 0 6px; font-size: 14px; font-weight: 600; color: #334155; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    ${STORE_NAME}
+                  </p>
+                  <p style="margin: 0 0 16px; font-size: 13px; color: #94a3b8; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    ${STORE_ADDRESS}
+                  </p>
+                  <p style="margin: 0 0 16px; font-size: 13px; color: #94a3b8; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    <a href="mailto:${STORE_EMAIL}" style="color: ${BRAND_COLOR}; text-decoration: none;">${STORE_EMAIL}</a>
+                    &nbsp;&middot;&nbsp;
+                    ${STORE_PHONE}
+                  </p>
+                  <p style="margin: 0; font-size: 12px; color: #cbd5e1; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                    &copy; ${new Date().getFullYear()} ${STORE_NAME}. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+
+            </table>
+            <!-- /Email Container -->
+
+          </td>
+        </tr>
+      </table>
     </body>
     </html>
   `;
@@ -134,7 +242,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
     <p>Welcome to ${STORE_NAME}! We're absolutely thrilled to have you join our community.</p>
     <p>Discover our wide range of products tailored just for you. If you need any assistance, our support team is always here to help.</p>
   `;
-  const cta = `<a href="https://sreedharstore.com/shop" class="btn">Start Shopping</a>`;
+  const cta = getCtaButton("https://sreedharstore.com/shop", "Start Shopping");
   return sendMail({ to, subject: `Welcome to ${STORE_NAME}!`, html: getBaseEmailTemplate("Welcome Aboard!", content, cta) });
 }
 
@@ -144,7 +252,7 @@ export async function sendEmailVerification(to: string, name: string, verifyUrl:
     <p>Please verify your email address to complete your registration and unlock all features of your ${STORE_NAME} account.</p>
     <p>This link will expire in 24 hours.</p>
   `;
-  const cta = `<a href="${verifyUrl}" class="btn">Verify Email Address</a>`;
+  const cta = getCtaButton(verifyUrl, "Verify Email Address");
   return sendMail({ to, subject: "Verify Your Email", html: getBaseEmailTemplate("Verify Your Email", content, cta) });
 }
 
@@ -152,10 +260,14 @@ export async function sendOtpVerification(to: string, name: string, otpCode: str
   const content = `
     <p>Hi ${name},</p>
     <p>Your One-Time Password (OTP) for verification is:</p>
-    <div style="background-color: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center; margin: 24px 0;">
-      <span style="font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #0f172a;">${otpCode}</span>
-    </div>
-    <p>Please enter this code on the verification page. Do not share this code with anyone.</p>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background-color: #f1f5f9; padding: 24px; border-radius: 12px; text-align: center;">
+          <span style="font-size: 36px; font-weight: 700; letter-spacing: 10px; color: #0f172a; font-family: 'Courier New', monospace;">${otpCode}</span>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top: 16px;">Please enter this code on the verification page. Do not share this code with anyone.</p>
   `;
   return sendMail({ to, subject: "Your Verification Code", html: getBaseEmailTemplate("Verification Code", content) });
 }
@@ -166,7 +278,7 @@ export async function sendPasswordReset(to: string, name: string, resetUrl: stri
     <p>We received a request to reset your password. If you didn't make this request, you can safely ignore this email.</p>
     <p>To reset your password, click the button below:</p>
   `;
-  const cta = `<a href="${resetUrl}" class="btn">Reset Password</a>`;
+  const cta = getCtaButton(resetUrl, "Reset Password");
   return sendMail({ to, subject: "Reset Your Password", html: getBaseEmailTemplate("Password Reset Request", content, cta) });
 }
 
@@ -185,7 +297,7 @@ export async function sendAccountCreated(to: string, name: string) {
     <p>Your account at ${STORE_NAME} has been successfully created by an administrator.</p>
     <p>You can now log in and manage your profile.</p>
   `;
-  const cta = `<a href="https://sreedharstore.com/login" class="btn">Log In Now</a>`;
+  const cta = getCtaButton("https://sreedharstore.com/login", "Log In Now");
   return sendMail({ to, subject: "Your Account is Ready", html: getBaseEmailTemplate("Account Created", content, cta) });
 }
 
@@ -201,10 +313,17 @@ export async function sendOrderConfirmation(to: string, name: string, orderNumbe
   const content = `
     <p>Hi ${name},</p>
     <p>Thank you for your order! We've received your order <strong>#${orderNumber}</strong> and are getting it ready for you.</p>
-    <p><strong>Total Amount:</strong> ₹${amount}</p>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background-color: #eff6ff; border-left: 4px solid ${BRAND_COLOR}; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0;">
+          <p style="margin: 0; font-size: 14px; color: #1e3a8a;"><strong>Order Number:</strong> #${orderNumber}</p>
+          <p style="margin: 4px 0 0; font-size: 14px; color: #1e3a8a;"><strong>Total Amount:</strong> ₹${amount}</p>
+        </td>
+      </tr>
+    </table>
     <p>We will notify you once your order ships.</p>
   `;
-  const cta = `<a href="https://sreedharstore.com/account/orders/${orderNumber}" class="btn">View Order Status</a>`;
+  const cta = getCtaButton(`https://sreedharstore.com/account/orders/${orderNumber}`, "View Order Status");
   return sendMail({ to, subject: `Order Confirmation - #${orderNumber}`, html: getBaseEmailTemplate("Order Confirmed", content, cta) });
 }
 
@@ -213,11 +332,15 @@ export async function sendOrderStatusEmail(to: string, orderNumber: string, stat
   const content = `
     <p>Hi ${customerName},</p>
     <p>Your order <strong>#${orderNumber}</strong> has been updated.</p>
-    <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 4px; margin: 24px 0;">
-      <p style="margin: 0; color: #1e3a8a;">New Status: <strong>${formattedStatus.toUpperCase()}</strong></p>
-    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 0 8px 8px 0;">
+          <p style="margin: 0; color: #1e3a8a; font-size: 14px;">New Status: <strong>${formattedStatus.toUpperCase()}</strong></p>
+        </td>
+      </tr>
+    </table>
   `;
-  const cta = `<a href="https://sreedharstore.com/account/orders/${orderNumber}" class="btn">Track Order</a>`;
+  const cta = getCtaButton(`https://sreedharstore.com/account/orders/${orderNumber}`, "Track Order");
   return sendMail({ to, subject: `Order Update: #${orderNumber} is now ${formattedStatus}`, html: getBaseEmailTemplate("Order Status Update", content, cta) });
 }
 
@@ -225,14 +348,18 @@ export async function sendOrderCancelled(to: string, name: string, orderNumber: 
   const content = `
     <p>Hi ${name},</p>
     <p>Your order <strong>#${orderNumber}</strong> has been successfully cancelled as requested.</p>
-    <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; border-radius: 4px; margin: 24px 0;">
-      <p style="margin: 0; color: #991b1b;"><strong>Order Number:</strong> #${orderNumber}</p>
-      <p style="margin: 8px 0 0; color: #991b1b;"><strong>Status:</strong> Cancelled</p>
-    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px 20px; border-radius: 0 8px 8px 0;">
+          <p style="margin: 0; color: #991b1b; font-size: 14px;"><strong>Order Number:</strong> #${orderNumber}</p>
+          <p style="margin: 8px 0 0; color: #991b1b; font-size: 14px;"><strong>Status:</strong> Cancelled</p>
+        </td>
+      </tr>
+    </table>
     <p>If you paid online, your refund will be processed within <strong>5–7 business days</strong> to your original payment method.</p>
     <p>If you have any questions, feel free to reach out to our support team.</p>
   `;
-  const cta = `<a href="https://sreedharstore.com/account/orders" class="btn">View My Orders</a>`;
+  const cta = getCtaButton("https://sreedharstore.com/account/orders", "View My Orders");
   return sendMail({ to, subject: `Order Cancelled - #${orderNumber}`, html: getBaseEmailTemplate("Order Cancelled", content, cta) });
 }
 
@@ -258,7 +385,7 @@ export async function sendInvoiceEmail(to: string, name: string, orderNumber: st
     <p>Hi ${name},</p>
     <p>Your invoice for order <strong>#${orderNumber}</strong> is ready to view and download.</p>
   `;
-  const cta = `<a href="${invoiceUrl}" class="btn">Download Invoice</a>`;
+  const cta = getCtaButton(invoiceUrl, "Download Invoice");
   return sendMail({ to, subject: `Your Invoice for Order #${orderNumber}`, html: getBaseEmailTemplate("Invoice Available", content, cta) });
 }
 
@@ -274,11 +401,15 @@ export async function sendContactFormConfirmation(to: string, name: string) {
 export async function sendAdminContactNotification(adminEmail: string, userName: string, message: string) {
   const content = `
     <p>A new contact enquiry has been submitted by <strong>${userName}</strong>.</p>
-    <div style="background-color: #f1f5f9; padding: 16px; border-radius: 4px; margin: 24px 0;">
-      <p style="margin: 0; font-style: italic;">"${message}"</p>
-    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background-color: #f1f5f9; padding: 16px 20px; border-radius: 8px;">
+          <p style="margin: 0; font-style: italic; color: #475569;">"${message}"</p>
+        </td>
+      </tr>
+    </table>
   `;
-  const cta = `<a href="https://sreedharstore.com/admin/enquiries" class="btn">View Enquiries</a>`;
+  const cta = getCtaButton("https://sreedharstore.com/admin/enquiries", "View Enquiries");
   return sendMail({ to: adminEmail, subject: "New Contact Enquiry Received", html: getBaseEmailTemplate("New Enquiry", content, cta) });
 }
 
@@ -287,7 +418,7 @@ export async function sendNewsletterSubscription(to: string) {
     <p>Hi there,</p>
     <p>Thank you for subscribing to our newsletter! You'll be the first to know about our latest products, exclusive offers, and store updates.</p>
   `;
-  const cta = `<a href="https://sreedharstore.com" class="btn">Explore Store</a>`;
+  const cta = getCtaButton("https://sreedharstore.com", "Explore Store");
   return sendMail({ to, subject: `Welcome to the ${STORE_NAME} Newsletter!`, html: getBaseEmailTemplate("Subscription Confirmed", content, cta) });
 }
 
@@ -295,12 +426,16 @@ export async function sendCouponReceived(to: string, name: string, couponCode: s
   const content = `
     <p>Hi ${name},</p>
     <p>We're sending a special gift your way! Enjoy <strong>${discountDesc}</strong> on your next purchase.</p>
-    <div style="background-color: #fce7f3; border: 2px dashed #db2777; padding: 20px; border-radius: 8px; text-align: center; margin: 24px 0;">
-      <span style="font-size: 24px; font-weight: 700; color: #be185d;">${couponCode}</span>
-    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background-color: #fdf2f8; border: 2px dashed #db2777; padding: 24px; border-radius: 12px; text-align: center;">
+          <span style="font-size: 28px; font-weight: 700; color: #be185d; letter-spacing: 4px; font-family: 'Courier New', monospace;">${couponCode}</span>
+        </td>
+      </tr>
+    </table>
     <p>Apply this code at checkout to claim your discount.</p>
   `;
-  const cta = `<a href="https://sreedharstore.com" class="btn">Shop Now</a>`;
+  const cta = getCtaButton("https://sreedharstore.com", "Shop Now");
   return sendMail({ to, subject: "You received a special coupon!", html: getBaseEmailTemplate("Special Offer", content, cta) });
 }
 
@@ -309,7 +444,7 @@ export async function sendPromotionalOffer(to: string, title: string, descriptio
     <p>Hi there,</p>
     <p>${description}</p>
   `;
-  const cta = `<a href="${url}" class="btn">Check it out</a>`;
+  const cta = getCtaButton(url, "Check it out");
   return sendMail({ to, subject: title, html: getBaseEmailTemplate(title, content, cta) });
 }
 
@@ -317,12 +452,16 @@ export async function sendLowStockAlert(adminEmail: string, productName: string,
   const content = `
     <p>Hello Admin,</p>
     <p>The following product is running critically low on stock:</p>
-    <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; border-radius: 4px; margin: 24px 0;">
-      <p style="margin: 0;"><strong>${productName}</strong> - Only ${stock} units remaining!</p>
-    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px 20px; border-radius: 0 8px 8px 0;">
+          <p style="margin: 0; font-size: 14px;"><strong>${productName}</strong> - Only ${stock} units remaining!</p>
+        </td>
+      </tr>
+    </table>
     <p>Please restock this item soon to avoid out-of-stock scenarios.</p>
   `;
-  const cta = `<a href="https://sreedharstore.com/admin/inventory" class="btn">Manage Inventory</a>`;
+  const cta = getCtaButton("https://sreedharstore.com/admin/inventory", "Manage Inventory");
   return sendMail({ to: adminEmail, subject: `Low Stock Alert: ${productName}`, html: getBaseEmailTemplate("Inventory Alert", content, cta) });
 }
 
@@ -330,7 +469,13 @@ export async function sendPaymentSuccess(to: string, name: string, amount: strin
   const content = `
     <p>Hi ${name},</p>
     <p>We successfully received your payment of <strong>₹${amount}</strong>.</p>
-    <p><strong>Transaction ID:</strong> ${transactionId}</p>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 16px 20px; border-radius: 0 8px 8px 0;">
+          <p style="margin: 0; font-size: 14px; color: #166534;"><strong>Transaction ID:</strong> ${transactionId}</p>
+        </td>
+      </tr>
+    </table>
     <p>Thank you for your purchase.</p>
   `;
   return sendMail({ to, subject: "Payment Successful", html: getBaseEmailTemplate("Payment Received", content) });
@@ -342,6 +487,6 @@ export async function sendPaymentFailed(to: string, name: string, orderNumber: s
     <p>Unfortunately, your recent payment attempt for order <strong>#${orderNumber}</strong> has failed.</p>
     <p>Please try again or use a different payment method to complete your purchase.</p>
   `;
-  const cta = `<a href="https://sreedharstore.com/account/orders/${orderNumber}" class="btn">Retry Payment</a>`;
+  const cta = getCtaButton(`https://sreedharstore.com/account/orders/${orderNumber}`, "Retry Payment");
   return sendMail({ to, subject: "Payment Failed", html: getBaseEmailTemplate("Payment Failed", content, cta) });
 }

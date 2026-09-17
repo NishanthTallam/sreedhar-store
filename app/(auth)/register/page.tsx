@@ -51,7 +51,7 @@ export default function RegisterPage() {
         </h2>
         <p className="text-sm text-neutral-500">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
+          <Link prefetch={false} href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
             Sign in instead
           </Link>
         </p>
@@ -67,7 +67,7 @@ export default function RegisterPage() {
             We've sent an email to <span className="font-semibold text-neutral-900">{email}</span>.
             Please click the link in the email to verify your account.
           </p>
-          <Link
+          <Link prefetch={false}
             href="/login"
             className="flex w-full items-center justify-center rounded-lg bg-brand-600 py-3 px-4 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition-all"
           >

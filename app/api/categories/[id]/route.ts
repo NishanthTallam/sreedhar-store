@@ -76,8 +76,12 @@ export async function DELETE(
     await requireAdmin();
     const { id } = await params;
 
-    // Check for attached products
-    const productCount = await prisma.product.count({ where: { categoryId: id } });
+    // Check for attached products and child categories concurrently
+    const [productCount, childCount] = await Promise.all([
+      prisma.product.count({ where: { categoryId: id } }),
+      prisma.category.count({ where: { parentId: id } })
+    ]);
+
     if (productCount > 0) {
       return NextResponse.json(
         { success: false, error: `Cannot delete: ${productCount} product(s) are linked to this category.` },
@@ -85,8 +89,6 @@ export async function DELETE(
       );
     }
 
-    // Check for child categories
-    const childCount = await prisma.category.count({ where: { parentId: id } });
     if (childCount > 0) {
       return NextResponse.json(
         { success: false, error: `Cannot delete: ${childCount} sub-category(ies) are linked to this category.` },

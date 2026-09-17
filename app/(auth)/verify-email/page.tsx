@@ -88,7 +88,7 @@ function VerifyEmailContent() {
             {message}
           </p>
           <div className="text-xs text-neutral-400 mb-6">Redirecting to login in a few seconds...</div>
-          <Link
+          <Link prefetch={false}
             href="/login"
             className="flex w-full justify-center rounded-lg bg-brand-600 py-3 px-4 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition-all"
           >
@@ -109,13 +109,13 @@ function VerifyEmailContent() {
             {message}
           </p>
           <div className="flex flex-col gap-3">
-            <Link
+            <Link prefetch={false}
               href="/login"
               className="flex w-full justify-center rounded-lg bg-brand-600 py-3 px-4 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition-all"
             >
               Go to Login
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/register"
               className="flex w-full justify-center rounded-lg border border-neutral-300 bg-white py-3 px-4 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 transition-all"
             >

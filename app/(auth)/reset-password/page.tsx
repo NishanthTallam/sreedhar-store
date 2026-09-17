@@ -58,7 +58,7 @@ function ResetPasswordForm() {
         </h2>
         <p className="text-sm text-neutral-500">
           Or{" "}
-          <Link href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
+          <Link prefetch={false} href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
             return to sign in
           </Link>
         </p>

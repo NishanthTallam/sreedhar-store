@@ -61,9 +61,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       {/* Breadcrumbs */}
       <nav className="mb-8 flex text-sm text-neutral-500">
         <ol className="flex items-center gap-2">
-          <li><Link href="/" className="hover:text-brand-600">Home</Link></li>
+          <li><Link prefetch={false} href="/" className="hover:text-brand-600">Home</Link></li>
           <li>/</li>
-          <li><Link href={`/category/${product.category.slug}`} className="hover:text-brand-600">{product.category.name}</Link></li>
+          <li><Link prefetch={false} href={`/category/${product.category.slug}`} className="hover:text-brand-600">{product.category.name}</Link></li>
           <li>/</li>
           <li className="font-medium text-neutral-900">{product.name}</li>
         </ol>

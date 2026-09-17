@@ -31,17 +31,17 @@ export default async function AdminProductsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-neutral-900">Products</h1>
         <div className="flex items-center gap-3">
-          <Link href="/admin/scanner" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-700 border border-neutral-300 hover:bg-neutral-50 flex items-center gap-2">
+          <Link prefetch={false} href="/admin/scanner" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-700 border border-neutral-300 hover:bg-neutral-50 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><path d="M7 12h10"></path></svg>
             Scan Barcode
           </Link>
-          <Link href="/admin/products/new" className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">
+          <Link prefetch={false} href="/admin/products/new" className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">
             Add Product
           </Link>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+      <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
         <table className="w-full text-left text-sm text-neutral-600">
           <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
             <tr>
@@ -89,7 +89,7 @@ export default async function AdminProductsPage() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Link href={`/admin/products/${product.id}/edit`} className="font-medium text-brand-600 hover:underline">
+                    <Link prefetch={false} href={`/admin/products/${product.id}/edit`} className="font-medium text-brand-600 hover:underline">
                       Edit
                     </Link>
                   </td>

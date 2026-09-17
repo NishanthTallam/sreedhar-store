@@ -37,7 +37,7 @@ export default async function AdminDeliveryBoysPage() {
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -84,7 +84,7 @@ export default async function AdminDeliveryBoysPage() {
                     {boy._count.deliveries} total
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                    <Link href={`/admin/customers/${boy.id}`} className="text-blue-600 hover:text-blue-900">
+                    <Link prefetch={false} href={`/admin/customers/${boy.id}`} className="text-blue-600 hover:text-blue-900">
                       View Profile
                     </Link>
                   </td>

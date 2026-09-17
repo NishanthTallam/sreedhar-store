@@ -87,7 +87,7 @@ export default function HelpPage() {
 
           <div className="p-4 rounded-xl bg-neutral-100 text-center">
             <p className="text-neutral-700 text-sm">Need help with a specific order?</p>
-            <Link href="/account/orders" className="inline-block mt-2 px-4 py-2 bg-white border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50">
+            <Link prefetch={false} href="/account/orders" className="inline-block mt-2 px-4 py-2 bg-white border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50">
               Go to My Orders
             </Link>
           </div>

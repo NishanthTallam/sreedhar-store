@@ -133,7 +133,7 @@ export async function POST(req: Request) {
 
     await sendMail({
       to: order.user.email,
-      subject: `Order Confirmed: ${order.orderNumber}`,
+      subject: `Order Placed: ${order.orderNumber}`,
       html: emailHtml,
     }).catch(console.error);
 

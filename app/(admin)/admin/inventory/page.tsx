@@ -23,7 +23,7 @@ export default async function AdminInventoryPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+      <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
         <table className="w-full text-left text-sm text-neutral-600">
           <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
             <tr>
@@ -44,7 +44,7 @@ export default async function AdminInventoryPage() {
                     ) : (
                       <div className="flex h-10 w-10 items-center justify-center rounded-md bg-neutral-100 text-neutral-400">-</div>
                     )}
-                    <Link href={`/admin/products/${variant.product.id}/edit`} className="font-medium text-neutral-900 hover:text-brand-600">
+                    <Link prefetch={false} href={`/admin/products/${variant.product.id}/edit`} className="font-medium text-neutral-900 hover:text-brand-600">
                       {variant.product.name}
                     </Link>
                   </div>

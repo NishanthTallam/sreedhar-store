@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
         </h2>
         <p className="text-sm text-neutral-500">
           Remember your password?{" "}
-          <Link href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
+          <Link prefetch={false} href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
             Sign in
           </Link>
         </p>
@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
           <p className="text-neutral-500 leading-relaxed mb-8">
             If an account exists with <span className="font-semibold text-neutral-900">{email}</span>, we have sent a password reset link.
           </p>
-          <Link
+          <Link prefetch={false}
             href="/login"
             className="flex w-full items-center justify-center rounded-lg bg-brand-600 py-3 px-4 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition-all"
           >

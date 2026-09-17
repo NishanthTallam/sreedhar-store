@@ -106,7 +106,7 @@ export default async function CustomerReturnsPage() {
                       <div className="flex flex-col gap-1 text-sm text-gray-600">
                         <p>
                           <span className="font-medium text-gray-900">Order:</span>{" "}
-                          <Link href={`/account/orders/${req.orderId}`} className="text-blue-600 hover:underline">
+                          <Link prefetch={false} href={`/account/orders/${req.orderId}`} className="text-blue-600 hover:underline">
                             #{req.order.orderNumber}
                           </Link>
                         </p>

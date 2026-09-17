@@ -58,7 +58,7 @@ export default function ContactUsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav className="mb-8 flex items-center text-sm text-neutral-500">
-        <Link href="/" className="hover:text-brand-600">Home</Link>
+        <Link prefetch={false} href="/" className="hover:text-brand-600">Home</Link>
         <ChevronRight className="mx-2 h-4 w-4" />
         <span className="text-neutral-900 font-medium">Contact Us</span>
       </nav>

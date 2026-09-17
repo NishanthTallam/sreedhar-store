@@ -24,7 +24,7 @@ export default async function AdminReturnsPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
+      <div className="overflow-x-auto rounded-xl border border-neutral-200 bg-white">
         <table className="w-full text-left text-sm text-neutral-600">
           <thead className="bg-neutral-50 text-xs uppercase text-neutral-500">
             <tr>

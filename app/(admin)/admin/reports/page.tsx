@@ -57,7 +57,7 @@ export default function ReportsPage() {
         </button>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-neutral-200 bg-white shadow-sm overflow-x-auto">
         <div className="px-6 py-4 border-b border-neutral-200 bg-neutral-50">
           <h3 className="font-semibold text-neutral-900">Daily Sales Report (Last 30 Days)</h3>
         </div>

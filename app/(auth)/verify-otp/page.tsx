@@ -128,7 +128,7 @@ function VerifyOtpContent() {
 
       <div className="mt-8 text-center text-sm text-neutral-500">
         Didn&apos;t receive the code?{" "}
-        <Link href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
+        <Link prefetch={false} href="/login" className="font-semibold text-brand-600 hover:text-brand-500 transition-colors">
           Back to login
         </Link>
       </div>

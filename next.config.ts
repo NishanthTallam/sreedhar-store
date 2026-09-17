@@ -8,14 +8,17 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "*.public.blob.vercel-storage.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "*.blob.vercel-storage.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "cdn.rodeodigital.com",
+        pathname: "/**",
       }
     ],
     formats: ["image/avif", "image/webp"],
@@ -29,6 +32,7 @@ const nextConfig: NextConfig = {
       "date-fns",
       "recharts",
     ],
+    turbopackFileSystemCacheForBuild: true,
   },
 
   // Enable HTTP Keep-Alive for Neon DB connection pooling
