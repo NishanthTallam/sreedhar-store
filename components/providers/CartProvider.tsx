@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
+import { usePusher } from "@/hooks/usePusher";
 
 interface CartContextType {
   cartCount: number;
@@ -17,7 +18,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartData, setCartData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshCart = async () => {
+  const refreshCart = useCallback(async () => {
     if (!session) {
       setCartData(null);
       setIsLoading(false);
@@ -36,11 +37,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session]);
 
   useEffect(() => {
     refreshCart();
-  }, [session]);
+  }, [refreshCart]);
+
+  // Real-time synchronization
+  usePusher(
+    session ? `private-user-${session.user.id}` : "",
+    "cart_updated",
+    () => {
+      refreshCart();
+    }
+  );
 
   const cartCount = cartData?.items?.length || 0;
 

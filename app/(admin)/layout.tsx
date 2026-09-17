@@ -1,5 +1,6 @@
 // app/(admin)/layout.tsx
 import AdminLayoutShell from "@/components/layout/AdminLayoutShell";
+import { AdminRealtimeListener } from "@/components/realtime/AdminRealtimeListener";
 
 export const dynamic = "force-dynamic";
 export default function AdminLayout({
@@ -7,5 +8,10 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminLayoutShell>{children}</AdminLayoutShell>;
+  return (
+    <AdminLayoutShell>
+      <AdminRealtimeListener />
+      {children}
+    </AdminLayoutShell>
+  );
 }

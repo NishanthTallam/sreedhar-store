@@ -31,6 +31,19 @@ export function useWishlist() {
       
       optimisticToggleWishlist(product, isWishlisted);
 
+      if (isWishlisted) {
+        toast({
+          title: "Removed",
+          description: "Removed from Wishlist",
+        });
+      } else {
+        toast({
+          title: "Added",
+          description: "Added to Wishlist",
+          variant: "success",
+        });
+      }
+
       return { previousWishlist, isWishlisted };
     },
     onError: (err, variables, context) => {
@@ -43,20 +56,6 @@ export function useWishlist() {
         description: "Failed to update wishlist.",
         variant: "danger",
       });
-    },
-    onSuccess: (data, variables, context) => {
-      if (variables.isWishlisted) {
-        toast({
-          title: "Removed",
-          description: "Removed from Wishlist",
-        });
-      } else {
-        toast({
-          title: "Added",
-          description: "Added to Wishlist",
-          variant: "success",
-        });
-      }
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
@@ -78,8 +77,14 @@ export function useWishlist() {
 
       // Optimistically add to wishlist
       if (variables.product) {
-        optimisticToggleWishlist(variables.product, false); // false meaning it is not currently wishlisted
+        optimisticToggleWishlist(variables.product, false);
       }
+
+      toast({
+        title: "Moved",
+        description: "Item moved to Wishlist",
+        variant: "success",
+      });
 
       return { previousCart, previousWishlist };
     },
@@ -98,13 +103,6 @@ export function useWishlist() {
         title: "Error",
         description: "Failed to move item to wishlist.",
         variant: "danger",
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Moved",
-        description: "Item moved to Wishlist",
-        variant: "success",
       });
     },
     onSettled: () => {

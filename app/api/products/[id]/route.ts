@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validators/product";
 import { requireAdmin } from "@/lib/rbac";
+import { pusherServer } from "@/lib/pusher";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -42,10 +43,54 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ success: false, error: "Slug already exists" }, { status: 400 });
     }
 
-    // Delete existing variants and recreate them for simplicity
-    // A more complex approach would be to update existing, but delete/recreate is robust for full-replace
     const product = await prisma.$transaction(async (tx) => {
-      await tx.variant.deleteMany({ where: { productId: id } });
+      // 1. Handle variant deletions safely
+      const existingVariants = await tx.variant.findMany({ where: { productId: id } });
+      const incomingIds = variants.map((v: any) => v.id).filter(Boolean);
+      const variantsToDelete = existingVariants.filter(v => !incomingIds.includes(v.id));
+
+      await Promise.all(variantsToDelete.map(async (v) => {
+        // Prevent deletion if the variant is part of an order
+        const hasOrders = await tx.orderItem.findFirst({ where: { variantId: v.id } });
+        if (hasOrders) {
+          throw new Error(`Cannot delete variant "${v.label}" because it has been ordered by customers. Please disable the product or update the variant's stock to 0 instead.`);
+        }
+        
+        // Remove from carts first to satisfy foreign key constraint
+        await tx.cartItem.deleteMany({ where: { variantId: v.id } });
+        await tx.variant.delete({ where: { id: v.id } });
+      }));
+
+      // 2. Upsert incoming variants
+      await Promise.all(variants.map(async (v: any) => {
+        const variantData = {
+          label: v.label,
+          unit: v.unit,
+          price: Math.max(0, (v.mrpPrice || 0) - (v.discount || 0)),
+          mrpPrice: v.mrpPrice,
+          discount: v.discount,
+          stock: v.stock,
+          lowStockAt: v.lowStockAt,
+          sku: v.sku,
+          barcode: v.barcode || null,
+        };
+
+        if (v.id) {
+          await tx.variant.update({
+            where: { id: v.id },
+            data: variantData,
+          });
+        } else {
+          await tx.variant.create({
+            data: {
+              ...variantData,
+              productId: id,
+            },
+          });
+        }
+      }));
+
+      // 3. Update the main product
       return tx.product.update({
         where: { id },
         data: {
@@ -57,25 +102,21 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
           isReturnable,
           isActive,
           images,
-          variants: {
-            create: variants.map((v) => ({
-              label: v.label,
-              unit: v.unit,
-              price: Math.max(0, (v.mrpPrice || 0) - (v.discount || 0)),
-              mrpPrice: v.mrpPrice,
-              discount: v.discount,
-              stock: v.stock,
-              lowStockAt: v.lowStockAt,
-              sku: v.sku,
-              barcode: v.barcode || null,
-            })),
-          },
         },
         include: {
           variants: true,
         },
       });
+    }, {
+      maxWait: 5000,
+      timeout: 20000
     });
+
+    try {
+      await pusherServer.trigger("store-public", "product_updated", { id });
+    } catch (e) {
+      console.error("[Pusher Product Update Error]", e);
+    }
 
     return NextResponse.json({ success: true, data: product });
   } catch (error) {

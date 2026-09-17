@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
 import { OrderStatus } from "@prisma/client";
+import { OrderRealtimeListener } from "@/components/realtime/OrderRealtimeListener";
 
 export const metadata = {
   title: "Order Details | Admin",
@@ -78,6 +79,7 @@ export default async function AdminOrderDetailsPage(props: { params: Promise<{ i
 
   return (
     <div className="flex flex-col gap-6">
+      <OrderRealtimeListener orderId={order.id} />
       <div className="flex items-center gap-4">
         <Link prefetch={false} href="/admin/orders" className="text-sm font-medium text-blue-600 hover:text-blue-500">
           &larr; Back to Orders

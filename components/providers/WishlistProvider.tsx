@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
+import { usePusher } from "@/hooks/usePusher";
 
 interface WishlistContextType {
   wishlistCount: number;
@@ -17,7 +18,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [wishlistData, setWishlistData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshWishlist = async () => {
+  const refreshWishlist = useCallback(async () => {
     if (!session) {
       setWishlistData([]);
       setIsLoading(false);
@@ -36,11 +37,20 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session]);
 
   useEffect(() => {
     refreshWishlist();
-  }, [session]);
+  }, [refreshWishlist]);
+
+  // Real-time synchronization
+  usePusher(
+    session ? `private-user-${session.user.id}` : "",
+    "wishlist_updated",
+    () => {
+      refreshWishlist();
+    }
+  );
 
   const wishlistCount = wishlistData?.length || 0;
 

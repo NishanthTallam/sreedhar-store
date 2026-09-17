@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/rbac";
 import { writeAuditLog } from "@/lib/audit";
 import { sendOrderStatusEmail, sendOrderCancelled } from "@/lib/mailer";
+import { pusherServer } from "@/lib/pusher";
 import { z } from "zod";
 
 const statusUpdateSchema = z.object({
@@ -122,6 +123,9 @@ export async function POST(
           });
         }
       }
+    }, {
+      maxWait: 5000,
+      timeout: 20000
     });
 
     // Write audit log
@@ -132,6 +136,17 @@ export async function POST(
       entityId: order.id,
       metadata: { oldStatus: order.status, newStatus },
     });
+
+    // Fire real-time events
+    try {
+      await Promise.all([
+        pusherServer.trigger(`private-order-${order.id}`, "status_updated", { status: newStatus }),
+        pusherServer.trigger(`private-admin`, "order_updated", { id: order.id, status: newStatus }),
+        pusherServer.trigger(`private-user-${order.userId}`, "notification", { title: `Order ${newStatus}` })
+      ]);
+    } catch (e) {
+      console.error("[Pusher Error]", e);
+    }
 
     // Fire & forget email – send a dedicated cancellation email when cancelled,
     // otherwise send the generic order-status update email.

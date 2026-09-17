@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { calculateDiscount } from "@/lib/coupons";
 import { sendMail } from "@/lib/mailer";
 import { generateOrderConfirmationEmail } from "@/emails/order-confirmation";
+import { pusherServer } from "@/lib/pusher";
 
 export async function POST(req: Request) {
   try {
@@ -146,6 +147,20 @@ export async function POST(req: Request) {
         body: `Your order ${order.orderNumber} has been placed. We'll update you when it ships!`,
       }
     });
+
+    // 8. Fire Real-time Events
+    try {
+      await Promise.all([
+        pusherServer.trigger("private-admin", "new_order", { orderId: order.id, orderNumber: order.orderNumber }),
+        pusherServer.trigger(`private-user-${session.user.id}`, "cart_updated", {}),
+        pusherServer.trigger(`private-user-${session.user.id}`, "notification", { title: "Order Placed successfully" }),
+        ...order.items.map(item => 
+          pusherServer.trigger("store-public", "stock_updated", { variantId: item.variantId })
+        )
+      ]);
+    } catch (e) {
+      console.error("[Pusher Order Post Error]", e);
+    }
 
     return NextResponse.json({ success: true, data: { orderId: order.id, orderNumber: order.orderNumber } }, { status: 201 });
   } catch (error: any) {

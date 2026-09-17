@@ -35,6 +35,9 @@ export async function POST(req: Request) {
           data: { userId: session.user.id, productId }
         });
       }
+    }, {
+      maxWait: 5000,
+      timeout: 20000
     });
 
     return NextResponse.json({ success: true });

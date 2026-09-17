@@ -104,18 +104,22 @@ export function WishlistClientList({ initialItems }: { initialItems: any[] }) {
   const { toggleWishlist } = useWishlist();
   const { wishlistData, setWishlistData } = useStore();
 
-  useEffect(() => {
-    if (initialItems && wishlistData.length === 0) {
-      setWishlistData(initialItems);
-    }
-  }, [initialItems, setWishlistData, wishlistData.length]);
+  const [storeInitialized, setStoreInitialized] = useState(false);
 
-  const items = wishlistData?.length > 0 ? wishlistData : initialItems;
+  useEffect(() => {
+    if (initialItems && !storeInitialized) {
+      setWishlistData(initialItems);
+      setStoreInitialized(true);
+    }
+  }, [initialItems, setWishlistData, storeInitialized]);
+
+  // After store is initialized, always use store data (even if empty) so optimistic updates work
+  const items = storeInitialized ? wishlistData : initialItems;
 
   const filteredItems = items.filter(
     (item) =>
-      item.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.product.brand?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      item.product?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.product?.brand?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleRemove = (product: any) => {

@@ -44,6 +44,9 @@ export async function POST(req: Request) {
           data: { cartId: cart.id, variantId, quantity: 1 }
         });
       }
+    }, {
+      maxWait: 5000,
+      timeout: 20000
     });
 
     return NextResponse.json({ success: true });

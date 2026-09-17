@@ -30,6 +30,12 @@ export function useCart() {
         variant: variables.variant,
       });
 
+      toast({
+        title: "Success",
+        description: "Added to Cart",
+        variant: "success",
+      });
+
       return { previousCart };
     },
     onError: (err, newCart, context) => {
@@ -41,13 +47,6 @@ export function useCart() {
         title: "Error",
         description: "Failed to add item to cart.",
         variant: "danger",
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Added to Cart",
-        variant: "success",
       });
     },
     onSettled: () => {
@@ -63,6 +62,11 @@ export function useCart() {
       
       optimisticRemoveFromCart(id);
 
+      toast({
+        title: "Removed",
+        description: "Item removed from cart",
+      });
+
       return { previousCart };
     },
     onError: (err, newCart, context) => {
@@ -74,13 +78,6 @@ export function useCart() {
         title: "Error",
         description: "Failed to remove item from cart.",
         variant: "danger",
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Removed",
-        description: "Item removed from cart",
-        variant: "default",
       });
     },
     onSettled: () => {
@@ -137,6 +134,12 @@ export function useCart() {
         useStore.getState().optimisticToggleWishlist(variables.product, true);
       }
 
+      toast({
+        title: "Moved",
+        description: "Item moved to Cart",
+        variant: "success",
+      });
+
       return { previousCart, previousWishlist };
     },
     onError: (err, variables, context) => {
@@ -154,13 +157,6 @@ export function useCart() {
         title: "Error",
         description: "Failed to move item to cart.",
         variant: "danger",
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Moved",
-        description: "Item moved to Cart",
-        variant: "success",
       });
     },
     onSettled: () => {

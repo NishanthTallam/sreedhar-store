@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { useSession } from "@/lib/auth-client";
+import { usePusher } from "@/hooks/usePusher";
 
 interface NotificationContextType {
   unreadCount: number;
@@ -16,7 +17,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshNotifications = async () => {
+  const refreshNotifications = useCallback(async () => {
     if (!session) {
       setUnreadCount(0);
       setIsLoading(false);
@@ -33,11 +34,19 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session]);
 
   useEffect(() => {
     refreshNotifications();
-  }, [session]);
+  }, [refreshNotifications]);
+
+  usePusher(
+    session ? `private-user-${session.user.id}` : "",
+    "notification",
+    () => {
+      refreshNotifications();
+    }
+  );
 
   return (
     <NotificationContext.Provider value={{ unreadCount, refreshNotifications, isLoading }}>

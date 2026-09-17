@@ -5,6 +5,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { OrderStatus } from "@prisma/client";
 import Image from "next/image";
+import { OrderRealtimeListener } from "@/components/realtime/OrderRealtimeListener";
 
 export const metadata = {
   title: "Order Details | General Store",
@@ -57,6 +58,7 @@ export default async function OrderDetailsPage(props: { params: Promise<{ id: st
 
   return (
     <div className="flex flex-col gap-6">
+      <OrderRealtimeListener orderId={order.id} />
       <div className="flex items-center gap-4">
         <Link prefetch={false} href="/account/orders" className="text-sm font-medium text-blue-600 hover:text-blue-500">
           &larr; Back to Orders

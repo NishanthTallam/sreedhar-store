@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { pusherServer } from "@/lib/pusher";
 
 export async function GET(req: Request) {
   try {
@@ -88,6 +89,12 @@ export async function POST(req: Request) {
       await prisma.cartItem.create({
         data: { cartId: cart.id, variantId, quantity: quantity || 1 }
       });
+    }
+
+    try {
+      await pusherServer.trigger(`private-user-${session.user.id}`, "cart_updated", {});
+    } catch (e) {
+      console.error("[Pusher Cart Update Error]", e);
     }
 
     return NextResponse.json({ success: true });

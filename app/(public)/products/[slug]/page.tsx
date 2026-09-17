@@ -5,6 +5,7 @@ import Link from "next/link";
 // Using a Client Component wrapper to handle the VariantSelector state 
 // and Add to Cart logic, since this page is a Server Component.
 import ProductDetailClient from "./ProductDetailClient";
+import { ProductRealtimeListener } from "@/components/realtime/ProductRealtimeListener";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -58,6 +59,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <ProductRealtimeListener productId={formattedProduct.id} />
       {/* Breadcrumbs */}
       <nav className="mb-8 flex text-sm text-neutral-500">
         <ol className="flex items-center gap-2">
